@@ -1,2 +1,1689 @@
-.account-entry{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:0 18px;border-radius:12px;background:#181818;color:#fff;font-size:13px;font-weight:650;text-decoration:none;white-space:nowrap}.header-actions{display:flex;gap:10px;align-items:center}.is-account main>*:not(#account-page){display:none!important}#account-page{max-width:1160px;margin:42px auto 80px;padding:0 24px}.account-title{margin:32px 0}.account-title h1{font-size:36px;color:#181818;background:none;-webkit-text-fill-color:#181818;letter-spacing:-1px;margin:12px 0}.account-title p{color:#777;font-size:14px}.auth-layout{display:grid;grid-template-columns:1fr 1fr;max-width:960px;margin:auto;gap:28px}.account-intro{background:#191919;color:white;border-radius:24px;padding:48px;display:flex;flex-direction:column;min-height:520px}.account-monogram{font-size:34px;font-weight:800;font-style:italic}.account-monogram span{font-style:normal;font-size:18px;color:#aaa;margin-left:8px}.account-intro h2{font-size:38px;line-height:1.4;margin:75px 0 18px}.account-intro p{font-size:14px;color:#aaa;line-height:1.9}.account-intro-foot{margin-top:auto;padding-top:50px;font-size:12px;color:#aaa;letter-spacing:2px}.account-card{background:#fff;border:1px solid #e3e3e3;border-radius:24px;padding:32px;min-width:0}.account-tabs{display:flex;border-bottom:1px solid #eee;margin-bottom:26px}.account-tabs a{flex:1;text-align:center;padding:14px;color:#888;text-decoration:none}.account-tabs .selected{color:#181818;border-bottom:2px solid #181818;font-weight:700}.account-field{display:block;font-size:13px;font-weight:600;margin:18px 0 8px}.account-field input{display:block;width:100%;box-sizing:border-box;border:1px solid #ddd;border-radius:12px;padding:15px;margin-top:9px;background:#fafafa;color:#181818;font:inherit;font-size:15px}.account-field input:focus{outline:2px solid #555;outline-offset:2px;background:#fff}.account-hint,.account-terms{font-size:12px;line-height:1.8;color:#858585}.account-error{font-size:13px;color:#a32525;min-height:20px;overflow-wrap:anywhere}.account-consent{display:flex;gap:9px;align-items:start;font-size:12px;margin:22px 0 12px}.account-consent input{accent-color:#181818;margin-top:2px}.account-terms{margin-bottom:18px}.account-forgot{display:block;text-align:center;margin:20px 0;font-size:13px;color:#666}.account-card .primary{background:#181818;color:white;min-height:48px}.account-card button{cursor:pointer}.account-card button:disabled{opacity:.5;cursor:default}.member-grid{display:grid;grid-template-columns:310px 1fr;gap:26px;align-items:start}.account-avatar{width:56px;height:56px;border-radius:18px;background:#eee;display:grid;place-items:center;font-size:24px;font-weight:700;margin-bottom:24px}.member-profile h2{font-size:19px}.member-email{overflow-wrap:anywhere;color:#777;font-size:13px;margin:12px 0 26px}.account-shop{display:flex;align-items:center;justify-content:center;text-decoration:none;margin-bottom:12px}.password-settings{margin-top:26px;border-top:1px solid #eee;padding-top:20px;font-size:13px}.password-settings summary,.account-terms summary{cursor:pointer}.account-section-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px}.account-section-head h2{font-size:20px;margin:0}.member-order{width:100%;display:flex;justify-content:space-between;text-align:left;background:#fafafa;border:1px solid #e8e8e8;padding:20px;border-radius:14px;margin-top:12px;gap:15px;color:#222}.member-order span{min-width:0}.member-order span:last-child{text-align:right;flex-shrink:0}.member-order strong{font-size:14px}.member-order small{display:block;color:#888;font-size:11px;overflow-wrap:anywhere;margin-top:8px}.account-empty{text-align:center;padding:65px 15px;color:#999}.account-empty>span{font-size:40px}.account-empty h3{color:#333;margin:20px 0 10px;font-size:17px}.account-empty p{font-size:13px}.account-empty a{display:inline-block;color:#222;margin-top:20px;font-size:13px}.account-pagination{display:flex;justify-content:space-between;align-items:center;margin-top:22px;font-size:12px;color:#888}.checkout-member-link{margin-left:16px;color:#333;font-size:13px}.is-account #product-dialog{max-width:760px}.is-account #product-dialog .checkout-layout{grid-template-columns:1fr}
-@media(max-width:700px){#account-page{padding:0 16px;margin-top:28px}.auth-layout,.member-grid{grid-template-columns:1fr;gap:18px}.account-intro{display:none}.account-title h1{font-size:29px}.account-card{padding:24px 20px;border-radius:18px}.account-entry{font-size:12px;padding:0 12px}.header-actions{gap:6px}.header-actions .contact{padding:10px;font-size:12px}.member-order{padding:14px}.member-profile{padding:24px}.account-title{margin:24px 0}}
+/* ==========================================================================
+   Hh AI — Apple Design Account, Wallet & Auth Dialog System
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   1. 通用弹窗覆盖与苹果磨砂玻璃规范 (Modal Overrides)
+   -------------------------------------------------------------------------- */
+#auth-dialog,
+#wallet-dialog,
+#user-center-dialog {
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 24px;
+  padding: 0;
+  background: #ffffff;
+  color: #1d1d1f;
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.16), 0 4px 16px rgba(0, 0, 0, 0.04);
+  max-height: calc(100vh - 48px);
+  overflow: hidden;
+  position: fixed;
+  inset: 0;
+  margin: auto;
+}
+
+#auth-dialog::backdrop,
+#wallet-dialog::backdrop,
+#user-center-dialog::backdrop {
+  background: rgba(0, 0, 0, 0.38);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  animation: appleBackdropFade 0.25s ease-out;
+}
+
+@keyframes appleBackdropFade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* 统一圆形极简关闭按钮 */
+dialog .close-dialog-btn {
+  position: absolute;
+  right: 18px;
+  top: 18px;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #f5f5f7;
+  border: none;
+  font-size: 18px;
+  line-height: 1;
+  color: #86868b;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  z-index: 20;
+}
+
+dialog .close-dialog-btn:hover {
+  background: #e8e8ed;
+  color: #1d1d1f;
+  transform: scale(1.06);
+}
+
+/* --------------------------------------------------------------------------
+   2. 客户登录 / 注册弹窗 (Apple ID Style Auth Modal)
+   -------------------------------------------------------------------------- */
+#auth-dialog {
+  width: min(440px, calc(100vw - 32px));
+}
+
+.auth-dialog-wrap {
+  padding: 38px 32px 30px;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  max-height: calc(90vh - 10px);
+}
+
+.auth-modal-header {
+  text-align: center;
+  margin-bottom: 22px;
+}
+
+.auth-brandmark {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 14px;
+}
+
+.auth-brandmark svg {
+  border-radius: 11px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
+}
+
+.auth-modal-header h2 {
+  font-size: 22px;
+  font-weight: 700;
+  color: #1d1d1f;
+  margin: 0 0 6px;
+  letter-spacing: -0.02em;
+}
+
+.auth-modal-header p {
+  font-size: 13px;
+  color: #86868b;
+  margin: 0;
+  line-height: 1.5;
+}
+
+/* 苹果分段胶囊选项卡 (Segmented Control Tabs) */
+.auth-modal-tabs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  background: #f5f5f7;
+  border-radius: 12px;
+  padding: 3px;
+  margin-bottom: 20px;
+  gap: 2px;
+}
+
+.auth-tab-btn {
+  border: none;
+  background: transparent;
+  padding: 8px 14px;
+  border-radius: 9px;
+  font-size: 13.5px;
+  font-weight: 500;
+  color: #86868b;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  text-align: center;
+}
+
+.auth-tab-btn:hover:not(.active) {
+  color: #1d1d1f;
+}
+
+.auth-tab-btn.active {
+  background: #ffffff;
+  color: #1d1d1f;
+  font-weight: 600;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+/* 表单主体与垂直堆叠布局 */
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  text-align: left;
+}
+
+.auth-badge-tag {
+  font-size: 13px;
+  font-weight: 700;
+  color: #2563eb;
+  letter-spacing: 0.02em;
+  margin-bottom: 4px;
+}
+
+.auth-modal-header h2 {
+  font-size: 26px;
+  font-weight: 800;
+  color: #111827;
+  margin: 4px 0 8px;
+  letter-spacing: -0.02em;
+}
+
+.auth-modal-header p {
+  font-size: 13.5px;
+  color: #6b7280;
+  margin: 0;
+}
+
+.form-field-block {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 0;
+}
+
+.field-head-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 6px;
+}
+
+.field-head-label .field-ico {
+  color: #6b7280;
+}
+
+.form-field-block input {
+  width: 100%;
+  box-sizing: border-box;
+  height: 46px;
+  padding: 0 14px;
+  background: #ffffff;
+  border: 1px solid #d1d5db;
+  border-radius: 10px;
+  font-size: 14.5px;
+  color: #111827;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  outline: none;
+}
+
+.form-field-block input::placeholder {
+  color: #9ca3af;
+}
+
+.form-field-block input:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.16);
+}
+
+.form-field-block input.has-error {
+  border-color: #ef4444;
+}
+
+.field-error-tip {
+  font-size: 12px;
+  color: #ef4444;
+  margin-top: 5px;
+  font-weight: 500;
+}
+
+.field-dev-tip {
+  font-size: 11.5px;
+  color: #2563eb;
+  background: #eff6ff;
+  border-radius: 6px;
+  padding: 4px 8px;
+  margin-top: 5px;
+  border: 1px solid #bfdbfe;
+}
+
+/* 密码与眼睛按钮容器 */
+.input-with-eye-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.input-with-eye-wrap input {
+  padding-right: 42px;
+}
+
+.eye-toggle-btn {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #9ca3af;
+  padding: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  transition: color 0.15s ease;
+}
+
+.eye-toggle-btn:hover {
+  color: #374151;
+}
+
+/* 图形验证码 (Graphic Captcha) */
+.captcha-input-row {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.captcha-input-row input {
+  flex: 1;
+  min-width: 0;
+  text-transform: uppercase;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 15px;
+  letter-spacing: 0.08em;
+  font-weight: 600;
+}
+
+.captcha-img-box {
+  border: 1px solid #d1d5db;
+  border-radius: 10px;
+  background: #f8fafc;
+  height: 46px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  overflow: hidden;
+  flex-shrink: 0;
+  position: relative;
+  transition: all 0.2s ease;
+  user-select: none;
+}
+
+.captcha-img-box:hover {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.16);
+}
+
+.captcha-img-box svg {
+  display: block;
+  height: 100%;
+  width: auto;
+}
+
+.captcha-refresh-hint {
+  font-size: 11.5px;
+  color: #6b7280;
+  margin-top: 4px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+}
+
+.captcha-refresh-hint:hover {
+  color: #2563eb;
+}
+
+/* Cloudflare Turnstile 人机验证卡片 */
+.turnstile-card {
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  background: #f9fafb;
+  padding: 12px 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  user-select: none;
+  transition: border-color 0.2s ease, background-color 0.2s ease;
+}
+
+.turnstile-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  flex: 1;
+}
+
+.cf-checkbox {
+  width: 22px;
+  height: 22px;
+  border: 2px solid #9ca3af;
+  border-radius: 4px;
+  background: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.cf-check-svg {
+  display: none;
+}
+
+.cf-spinner {
+  display: none;
+  width: 13px;
+  height: 13px;
+  border: 2px solid #3b82f6;
+  border-top-color: transparent;
+  border-radius: 50%;
+  animation: cfSpin 0.7s linear infinite;
+}
+
+@keyframes cfSpin {
+  to { transform: rotate(360deg); }
+}
+
+.turnstile-card.verifying .cf-checkbox {
+  border-color: #3b82f6;
+}
+
+.turnstile-card.verifying .cf-spinner {
+  display: block;
+}
+
+.turnstile-card.verified {
+  border-color: #bbf7d0;
+  background: #f0fdf4;
+}
+
+.turnstile-card.verified .cf-checkbox {
+  border-color: #16a34a;
+  background: #16a34a;
+}
+
+.turnstile-card.verified .cf-check-svg {
+  display: block;
+  stroke: #ffffff;
+}
+
+.cf-text {
+  font-size: 13.5px;
+  color: #1f2937;
+  font-weight: 500;
+}
+
+.turnstile-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 1px;
+}
+
+.cf-brand {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.cf-name {
+  font-size: 9.5px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  color: #4b5563;
+}
+
+.cf-links {
+  font-size: 10px;
+  color: #9ca3af;
+}
+
+/* 邮箱验证码行 */
+.send-code-row {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.send-code-row input {
+  flex: 1;
+  min-width: 0;
+}
+
+.send-code-btn {
+  height: 46px;
+  padding: 0 16px;
+  background: #f3f4f6;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  font-size: 13.5px;
+  font-weight: 500;
+  color: #374151;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.send-code-btn:hover:not(:disabled) {
+  background: #e5e7eb;
+  color: #111827;
+}
+
+.send-code-btn:disabled {
+  background: #f9fafb;
+  color: #9ca3af;
+  cursor: not-allowed;
+  border-color: #e5e7eb;
+}
+
+/* 协议卡片框 */
+.terms-card-box {
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  background: #f9fafb;
+  padding: 12px 14px;
+  margin: 2px 0 2px;
+}
+
+.terms-checkbox-lbl {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+  color: #4b5563;
+  cursor: pointer;
+  user-select: none;
+}
+
+.terms-checkbox-lbl input[type="checkbox"] {
+  width: 17px;
+  height: 17px;
+  border-radius: 4px;
+  accent-color: #2563eb;
+  cursor: pointer;
+  margin: 0;
+  flex-shrink: 0;
+}
+
+.terms-hl-link {
+  color: #2563eb;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.terms-hl-link:hover {
+  text-decoration: underline;
+}
+
+/* 蓝色主操作按钮 (创建账号) */
+.auth-blue-submit-btn {
+  width: 100%;
+  height: 48px;
+  background: linear-gradient(180deg, #60a5fa 0%, #3b82f6 100%);
+  border: none;
+  border-radius: 12px;
+  color: #ffffff;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  box-shadow: 0 4px 14px rgba(59, 130, 246, 0.35);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  margin-top: 4px;
+}
+
+.auth-blue-submit-btn:hover:not(:disabled) {
+  background: linear-gradient(180deg, #3b82f6 0%, #2563eb 100%);
+  box-shadow: 0 6px 20px rgba(59, 130, 246, 0.45);
+  transform: translateY(-1px);
+}
+
+.auth-blue-submit-btn:active:not(:disabled) {
+  transform: translateY(0);
+  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
+}
+
+.auth-blue-submit-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* 单选/复选框行 (登录页) */
+.auth-options-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 2px 0 6px;
+}
+
+.auth-forgot-link {
+  font-size: 12.5px;
+  color: #2563eb;
+  background: none;
+  border: none;
+  padding: 0;
+  text-decoration: none;
+  font-weight: 600;
+  cursor: pointer;
+  transition: color 0.15s ease;
+}
+
+.auth-forgot-link:hover {
+  color: #1d4ed8;
+  text-decoration: underline;
+}
+
+.auth-modal-tabs-3 {
+  grid-template-columns: 1fr 1fr 1fr;
+}
+
+.auth-bottom-switch-row {
+  text-align: center;
+  font-size: 13px;
+  color: #6b7280;
+  margin-top: 10px;
+}
+
+.auth-bottom-switch-row a,
+.auth-bottom-switch-row button {
+  color: #2563eb;
+  font-weight: 600;
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-decoration: none;
+  padding: 0 4px;
+}
+
+.auth-bottom-switch-row a:hover,
+.auth-bottom-switch-row button:hover {
+  text-decoration: underline;
+}
+
+.custom-checkbox-lbl {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12.5px;
+  color: #86868b;
+  cursor: pointer;
+  user-select: none;
+}
+
+.custom-checkbox-lbl input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  border-radius: 4px;
+  accent-color: #0071e3;
+  cursor: pointer;
+  margin: 0;
+}
+
+.auth-guest-tip-row {
+  margin-top: 6px;
+  text-align: center;
+  font-size: 12px;
+  color: #86868b;
+  line-height: 1.5;
+}
+
+.auth-guest-tip-row b {
+  color: #1d1d1f;
+}
+
+/* 错误提示条 */
+.auth-form-error {
+  display: none;
+}
+
+.auth-form-error:not(:empty) {
+  display: block;
+  background: #fef2f2;
+  color: #b91c1c;
+  border: 1px solid #fecaca;
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-size: 12.5px;
+  line-height: 1.5;
+  margin: 2px 0 6px;
+}
+
+/* 提交主按钮 */
+.auth-submit-btn {
+  width: 100%;
+  height: 46px;
+  background: #0071e3;
+  color: #ffffff;
+  border: none;
+  border-radius: 12px;
+  font-size: 14.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 4px 14px rgba(0, 113, 227, 0.25);
+  margin-top: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.auth-submit-btn:hover {
+  background: #0077ed;
+  box-shadow: 0 6px 18px rgba(0, 113, 227, 0.35);
+  transform: translateY(-1px);
+}
+
+.auth-submit-btn:active {
+  transform: translateY(0);
+}
+
+.auth-submit-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* 底部企业级安全徽章 */
+.auth-modal-footer {
+  margin-top: 22px;
+  padding-top: 16px;
+  border-top: 1px solid rgba(0, 0, 0, 0.06);
+  text-align: center;
+  font-size: 11.5px;
+  color: #86868b;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+/* --------------------------------------------------------------------------
+   3. 个人中心与订单记录弹窗 (Apple Style User Center Modal)
+   -------------------------------------------------------------------------- */
+#user-center-dialog {
+  width: min(580px, calc(100vw - 32px));
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 24px;
+  padding: 0;
+  background: #ffffff;
+  color: #1d1d1f;
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.16), 0 4px 16px rgba(0, 0, 0, 0.04);
+  max-height: calc(100vh - 48px);
+  overflow: hidden;
+  position: fixed;
+  inset: 0;
+  margin: auto;
+}
+
+.center-modal-wrap {
+  padding: 30px 28px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-height: calc(90vh - 20px);
+  overflow-y: auto;
+}
+
+/* 顶部用户卡片 */
+.center-modal-header {
+  margin-bottom: 2px;
+}
+
+.center-user-card {
+  background: linear-gradient(135deg, #fbfbfd 0%, #f4f4f7 100%);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  border-radius: 20px;
+  padding: 16px 20px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+}
+
+.center-avatar {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #0071e3 0%, #005bb5 100%);
+  color: #ffffff;
+  display: grid;
+  place-items: center;
+  font-size: 22px;
+  font-weight: 700;
+  box-shadow: 0 4px 12px rgba(0, 113, 227, 0.28);
+  flex-shrink: 0;
+}
+
+.center-user-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.center-user-info h3 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 700;
+  color: #1d1d1f;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.center-user-badges {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.user-badge-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 12px;
+  background: #fffbeb;
+  color: #b45309;
+  border: 1px solid #fde68a;
+}
+
+.user-badge-tag svg {
+  color: #f59e0b;
+}
+
+.user-badge-balance {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11.5px;
+  font-weight: 500;
+  padding: 2px 9px;
+  border-radius: 12px;
+  background: #ecfdf5;
+  color: #047857;
+  border: 1px solid #a7f3d0;
+}
+
+.user-badge-balance b {
+  font-weight: 700;
+  color: #065f46;
+}
+
+.center-recharge-btn {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  height: 34px;
+  padding: 0 14px;
+  border-radius: 17px;
+  font-size: 12.5px;
+  font-weight: 600;
+  background: #0071e3;
+  color: #ffffff;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0, 113, 227, 0.25);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.center-recharge-btn:hover {
+  background: #0077ed;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 113, 227, 0.35);
+}
+
+/* 导航分段选项卡 (Apple Segmented Control) */
+.center-nav-tabs {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 5px;
+  background: #f5f5f7;
+  padding: 4px;
+  border-radius: 14px;
+  border: 1px solid rgba(0, 0, 0, 0.04);
+}
+
+.center-tab-btn {
+  border: none;
+  background: transparent;
+  padding: 8px 10px;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #6e6e73;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  white-space: nowrap;
+}
+
+.center-tab-btn:hover {
+  color: #1d1d1f;
+}
+
+.center-tab-btn.active {
+  background: #ffffff;
+  color: #1d1d1f;
+  font-weight: 600;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+/* 选项卡内容区域 */
+.center-tab-content {
+  min-height: 260px;
+  max-height: 380px;
+  overflow-y: auto;
+  padding-right: 2px;
+}
+
+/* 自定义纤细滚动条 */
+.center-tab-content::-webkit-scrollbar,
+.center-modal-wrap::-webkit-scrollbar {
+  width: 6px;
+}
+.center-tab-content::-webkit-scrollbar-thumb,
+.center-modal-wrap::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.12);
+  border-radius: 10px;
+}
+.center-tab-content::-webkit-scrollbar-thumb:hover,
+.center-modal-wrap::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.2);
+}
+
+/* 空状态 (Empty State) */
+.center-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 48px 20px;
+  gap: 12px;
+}
+
+.center-empty-state .empty-icon {
+  font-size: 42px;
+  opacity: 0.85;
+}
+
+.center-empty-state p {
+  font-size: 13.5px;
+  color: #86868b;
+  margin: 0;
+  max-width: 320px;
+  line-height: 1.5;
+}
+
+.close-center-to-shop {
+  margin-top: 6px;
+  background: #0071e3;
+  color: #ffffff;
+  border: none;
+  border-radius: 18px;
+  padding: 8px 18px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 2px 8px rgba(0, 113, 227, 0.25);
+}
+
+.close-center-to-shop:hover {
+  background: #0077ed;
+  transform: translateY(-1px);
+}
+
+/* 加载中与错误 */
+.center-loading {
+  text-align: center;
+  padding: 40px 20px;
+  font-size: 13px;
+  color: #86868b;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.center-error {
+  background: #fef2f2;
+  color: #dc2626;
+  border: 1px solid #fecaca;
+  padding: 12px 16px;
+  border-radius: 12px;
+  font-size: 13px;
+  text-align: center;
+  margin: 10px 0;
+}
+
+/* 订单记录列表 */
+.center-order-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.center-order-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 16px;
+  border: 1px solid rgba(0, 0, 0, 0.07);
+  border-radius: 16px;
+  background: #ffffff;
+  gap: 12px;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.center-order-row:hover {
+  border-color: rgba(0, 113, 227, 0.25);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.04);
+}
+
+.order-row-main {
+  flex: 1;
+  min-width: 0;
+}
+
+.order-row-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #1d1d1f;
+  margin-bottom: 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.order-row-meta {
+  font-size: 11.5px;
+  color: #86868b;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.order-row-meta code {
+  font-family: ui-monospace, SFMono-Regular, monospace;
+  color: #1d1d1f;
+  background: #f5f5f7;
+  padding: 1px 4px;
+  border-radius: 4px;
+}
+
+.order-status-badge {
+  font-weight: 600;
+  padding: 1.5px 6px;
+  border-radius: 5px;
+  font-size: 11px;
+}
+
+.order-status-badge.paid,
+.order-status-badge.fulfilling,
+.order-status-badge.completed,
+.order-status-badge.delivered {
+  background: #ecfdf5;
+  color: #059669;
+}
+
+.order-status-badge.pending_payment {
+  background: #fef3c7;
+  color: #b45309;
+}
+
+.order-status-badge.canceled,
+.order-status-badge.refunded {
+  background: #f3f4f6;
+  color: #6b7280;
+}
+
+.order-row-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.order-row-price {
+  font-size: 15.5px;
+  font-weight: 700;
+  color: #1d1d1f;
+}
+
+.btn-pay-now {
+  background: #0071e3;
+  color: #ffffff;
+  border: none;
+  border-radius: 14px;
+  padding: 5px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-pay-now:hover {
+  background: #0077ed;
+  transform: translateY(-1px);
+}
+
+/* 钱包资金流水列表 */
+.center-txn-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.center-txn-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  border-radius: 14px;
+  background: #fafafc;
+  transition: all 0.2s;
+}
+
+.center-txn-row:hover {
+  border-color: rgba(0, 0, 0, 0.12);
+  background: #ffffff;
+}
+
+.txn-left {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.txn-left strong {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: #1d1d1f;
+}
+
+.txn-left small {
+  font-size: 11px;
+  color: #86868b;
+}
+
+.txn-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+}
+
+.txn-val {
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.txn-val.plus {
+  color: #059669;
+}
+
+.txn-val.minus {
+  color: #1d1d1f;
+}
+
+.txn-right small {
+  font-size: 11px;
+  color: #86868b;
+}
+
+/* 账号安全设置区 */
+.center-security-box {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.security-card {
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 18px;
+  padding: 16px 18px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+}
+
+.security-card-header {
+  margin-bottom: 12px;
+}
+
+.security-card-title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14.5px;
+  font-weight: 700;
+  color: #1d1d1f;
+}
+
+.security-card-desc {
+  display: block;
+  font-size: 11.5px;
+  color: #86868b;
+  margin-top: 3px;
+}
+
+.security-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.security-form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.security-form-group label {
+  font-size: 12px;
+  font-weight: 600;
+  color: #333336;
+}
+
+.security-input-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.security-input-wrap .input-icon {
+  position: absolute;
+  left: 12px;
+  font-size: 14px;
+  color: #86868b;
+  pointer-events: none;
+  display: grid;
+  place-items: center;
+}
+
+.security-input-wrap input {
+  width: 100%;
+  height: 40px;
+  padding: 0 38px 0 36px;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  border-radius: 11px;
+  background: #fbfbfd;
+  font-size: 13.5px;
+  color: #1d1d1f;
+  box-sizing: border-box;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.security-input-wrap input::-ms-reveal,
+.security-input-wrap input::-ms-clear {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+}
+
+.security-input-wrap input:focus {
+  outline: none;
+  background: #ffffff;
+  border-color: #0071e3;
+  box-shadow: 0 0 0 3px rgba(0, 113, 227, 0.15);
+}
+
+.security-input-wrap .toggle-pwd-btn {
+  position: absolute;
+  right: 8px;
+  width: 28px;
+  height: 28px;
+  border: none;
+  background: transparent;
+  color: #86868b;
+  border-radius: 6px;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  transition: color 0.15s;
+}
+
+.security-input-wrap .toggle-pwd-btn:hover {
+  color: #1d1d1f;
+}
+
+.security-error {
+  min-height: 16px;
+  font-size: 12px;
+  color: #dc2626;
+  line-height: 1.4;
+}
+
+.security-error:empty {
+  display: none;
+}
+
+.security-submit-btn {
+  height: 38px;
+  background: #0071e3;
+  color: #ffffff;
+  border: none;
+  border-radius: 11px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 2px 8px rgba(0, 113, 227, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 2px;
+}
+
+.security-submit-btn:hover {
+  background: #0077ed;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 113, 227, 0.3);
+}
+
+.security-submit-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* 危险区 / 退出卡片 */
+.security-card.danger-card {
+  background: #fffafa;
+  border: 1px solid #fee2e2;
+  padding: 14px 18px;
+}
+
+.security-logout-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.security-logout-row .security-card-header {
+  margin-bottom: 0;
+}
+
+.security-danger-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  height: 34px;
+  padding: 0 16px;
+  width: auto;
+  white-space: nowrap;
+  flex-shrink: 0;
+  background: #ffffff;
+  color: #dc2626;
+  border: 1px solid #fecaca;
+  border-radius: 17px;
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 1px 3px rgba(220, 38, 38, 0.06);
+}
+
+.security-danger-btn:hover {
+  background: #fef2f2;
+  border-color: #fca5a5;
+  color: #b91c1c;
+}
+
+/* --------------------------------------------------------------------------
+   4. 个人钱包充值弹窗 (Wallet Modal)
+   -------------------------------------------------------------------------- */
+#wallet-dialog {
+  width: min(520px, calc(100vw - 32px));
+}
+
+.wallet-modal-wrap {
+  padding: 32px 28px 26px;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  max-height: calc(90vh - 10px);
+  gap: 18px;
+}
+
+.wallet-modal-header h2 {
+  font-size: 22px;
+  font-weight: 700;
+  margin: 4px 0 6px;
+  letter-spacing: -0.02em;
+}
+
+.wallet-modal-header p {
+  font-size: 13px;
+  color: #86868b;
+  margin: 0;
+  line-height: 1.5;
+}
+
+.wallet-title-tag {
+  font-size: 11px;
+  letter-spacing: 1.5px;
+  font-weight: 700;
+  color: #0071e3;
+}
+
+.wallet-balance-card {
+  background: linear-gradient(135deg, #1d1d1f 0%, #2c2c2e 100%);
+  color: #ffffff;
+  border-radius: 18px;
+  padding: 22px 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+}
+
+.balance-sub {
+  font-size: 12px;
+  color: #a1a1a6;
+  display: block;
+  margin-bottom: 4px;
+}
+
+.balance-num-row {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+}
+
+.currency-symbol {
+  font-size: 20px;
+  font-weight: 600;
+  color: #34d399;
+}
+
+.balance-amount {
+  font-size: 32px;
+  font-weight: 800;
+  letter-spacing: -1px;
+  color: #ffffff;
+}
+
+.status-pill {
+  background: rgba(52, 211, 153, 0.15);
+  color: #34d399;
+  border: 1px solid rgba(52, 211, 153, 0.3);
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 11.5px;
+  font-weight: 600;
+}
+
+.recharge-chips-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.chip-btn {
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  background: #fbfbfd;
+  border-radius: 12px;
+  padding: 12px 8px;
+  font-size: 15px;
+  font-weight: 700;
+  color: #1d1d1f;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-align: center;
+}
+
+.chip-btn small {
+  font-size: 10.5px;
+  font-weight: 400;
+  color: #86868b;
+  display: block;
+  margin-top: 2px;
+}
+
+.chip-btn.active {
+  border-color: #0071e3;
+  background: rgba(0, 113, 227, 0.05);
+  color: #0071e3;
+  box-shadow: 0 0 0 2px rgba(0, 113, 227, 0.2);
+}
+
+.recharge-channel-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.channel-choice-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 12px;
+  background: #fbfbfd;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.channel-choice-item:has(input:checked) {
+  border-color: #0071e3;
+  background: rgba(0, 113, 227, 0.04);
+}
+
+.channel-choice-info {
+  flex: 1;
+}
+
+.channel-choice-title {
+  display: block;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: #1d1d1f;
+}
+
+.channel-choice-desc {
+  display: block;
+  font-size: 12px;
+  color: #86868b;
+  margin-top: 2px;
+}
+
+.test-tag {
+  background: #fef3c7;
+  color: #b45309;
+  font-size: 10.5px;
+  padding: 1px 6px;
+  border-radius: 4px;
+  margin-left: 6px;
+}
+
+#do-recharge-btn {
+  width: 100%;
+  height: 46px;
+  background: #0071e3;
+  color: #ffffff;
+  border: none;
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 4px 14px rgba(0, 113, 227, 0.25);
+}
+
+#do-recharge-btn:hover {
+  background: #0077ed;
+  box-shadow: 0 6px 18px rgba(0, 113, 227, 0.35);
+}
+
+.btn-view-logs {
+  background: transparent;
+  border: none;
+  font-size: 12.5px;
+  color: #0071e3;
+  cursor: pointer;
+  text-align: center;
+  width: 100%;
+  padding: 6px;
+}
+
+/* --------------------------------------------------------------------------
+   5. 导航栏顶部账号按钮 (Header Bar Integration)
+   -------------------------------------------------------------------------- */
+.btn-auth-entry {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #1d1d1f;
+  color: #ffffff;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 13.5px;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+}
+
+.btn-auth-entry:hover {
+  background: #333336;
+  transform: translateY(-1px);
+}
+
+.user-session-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.user-profile-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  background: #f5f5f7;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  padding: 5px 12px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #1d1d1f;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.user-avatar-badge {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: #0071e3;
+  color: #ffffff;
+  display: grid;
+  place-items: center;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.wallet-balance-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: #fbfbfd;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  padding: 5px 10px;
+  border-radius: 20px;
+  font-size: 12.5px;
+  cursor: pointer;
+}
+
+.wallet-val {
+  font-weight: 700;
+  color: #b91c1c;
+}
+
+.btn-quick-recharge {
+  background: #ecfdf5;
+  color: #059669;
+  border: 1px solid #a7f3d0;
+  padding: 4px 10px;
+  border-radius: 16px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-quick-recharge:hover {
+  background: #d1fae5;
+}
+
+.btn-user-logout {
+  background: transparent;
+  border: none;
+  font-size: 12px;
+  color: #86868b;
+  cursor: pointer;
+  padding: 4px 6px;
+}
+
+.btn-user-logout:hover {
+  color: #b91c1c;
+}
+
+/* --------------------------------------------------------------------------
+   6. 移动端自适应 (Mobile Adaptations)
+   -------------------------------------------------------------------------- */
+@media (max-width: 640px) {
+  #auth-dialog,
+  #wallet-dialog,
+  #user-center-dialog {
+    width: calc(100vw - 24px);
+    border-radius: 20px;
+  }
+  
+  .auth-dialog-wrap,
+  .wallet-modal-wrap,
+  .center-modal-wrap {
+    padding: 28px 20px 22px;
+  }
+
+  .auth-modal-header h2 {
+    font-size: 20px;
+  }
+
+  .recharge-chips-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .user-session-bar {
+    gap: 6px;
+  }
+
+  .user-email-text {
+    max-width: 90px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}

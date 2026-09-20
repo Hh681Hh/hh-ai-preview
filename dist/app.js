@@ -43,9 +43,7 @@ const products = [
       { icon: 'image', text: '使用 Thinking 进行高级图像创建' },
       { icon: 'brain', text: '扩展容量的跨聊天记忆' },
       { icon: 'briefcase', text: '用于多步骤任务的 Work 智能体' },
-      { icon: 'code', text: 'Codex 编程智能体' },
-      { icon: 'search', text: '更高的深度研究使用额度' },
-      { icon: 'grid', text: '项目和自定义 GPT' }
+      { icon: 'code', text: 'Codex 编程智能体' }
     ],
     features: [
       '官方渠道充值，正规海外真实 Visa 实体卡代充',
@@ -82,10 +80,7 @@ const products = [
       { icon: 'pro_model', text: 'Pro 前沿模型' },
       { icon: 'codex_smile', text: 'Codex 智能体最高访问权限' },
       { icon: 'work_nodes', text: '工作智能体最高访问权限' },
-      { icon: 'chat_infinite', text: '无限制核心聊天' },
-      { icon: 'fast_image', text: '无限制且较快速的图片生成' },
-      { icon: 'memory_full', text: '全面的记忆和背景信息' },
-      { icon: 'flask_exp', text: '抢先体验实验性功能' }
+      { icon: 'chat_infinite', text: '无限制核心聊天' }
     ],
     features: [
       'Plus 中的所有内容，以及：',
@@ -123,10 +118,7 @@ const products = [
       { icon: 'pro_model', text: 'Pro 前沿模型最高集群调度' },
       { icon: 'codex_smile', text: 'Codex 智能体极限并发访问权限' },
       { icon: 'work_nodes', text: '工作智能体多任务并发集群' },
-      { icon: 'chat_infinite', text: '无限制核心聊天与海量上下文' },
-      { icon: 'fast_image', text: '无限制极速图片生成通道' },
-      { icon: 'memory_full', text: '超大规模全局知识与记忆' },
-      { icon: 'flask_exp', text: '顶级实验性模型优先体验特权' }
+      { icon: 'chat_infinite', text: '无限制核心聊天与海量上下文' }
     ],
     features: [
       'Pro 5x 中的所有内容，以及：',

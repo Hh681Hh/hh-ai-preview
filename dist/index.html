@@ -138,30 +138,39 @@
     </section>
 
     <!-- 订单查询 (Orders View) -->
-    <section id="orders-view" class="utility-view" hidden>
-      <p class="section-eyebrow">ORDER TRACKING</p>
-      <h2>订单追踪</h2>
-      <p class="section-desc">输入订单编号或查询凭证，实时追踪履约进度。</p>
+    <section id="orders-view" class="utility-view orders-utility-view" hidden>
+      <!-- 1. 核心提货与卡密直充区置顶 (首屏第一眼即见卡密与兑换网址) -->
+      <div id="order-result" class="order-result-top" aria-live="polite"></div>
 
-      <div class="order-stepper">
-        <div class="step-item completed"><div class="step-num">1</div><div class="step-text">提交</div></div>
-        <div class="step-line active"></div>
-        <div class="step-item active"><div class="step-num">2</div><div class="step-text">付款</div></div>
-        <div class="step-line"></div>
-        <div class="step-item"><div class="step-num">3</div><div class="step-text">出卡</div></div>
-        <div class="step-line"></div>
-        <div class="step-item"><div class="step-num">4</div><div class="step-text">完成</div></div>
-      </div>
-
-      <form id="query-form">
-        <div class="form-group">
-          <label for="order-number">订单编号</label>
-          <input id="order-number" placeholder="输入订单号或留空">
+      <!-- 2. 查询与检索表单卡片 (有订单时自动收纳在下方，无订单时作为主界面) -->
+      <div class="query-lookup-card" id="query-lookup-card">
+        <div class="query-toggle-trigger" id="query-toggle-trigger" style="display:none;">
+          <button type="button" class="btn-toggle-lookup" id="btn-toggle-lookup">
+            <span>🔍 需要查询其他订单或切换凭证？</span>
+            <span class="toggle-action-text">点击展开自查表单 ▼</span>
+          </button>
         </div>
-        <button class="apple-btn primary query-submit-btn">查询订单</button>
-      </form>
-      <p class="muted">浏览器会暂存最近一笔订单信息。更换设备请备好 64 位查询凭证。</p>
-      <div id="order-result" aria-live="polite"></div>
+
+        <div class="query-card-body" id="query-card-body">
+          <div class="query-card-header">
+            <p class="section-eyebrow">ORDER LOOKUP</p>
+            <h2>订单查询</h2>
+            <p class="section-desc">输入下单邮箱与订单密码，即可查询卡密信息</p>
+          </div>
+
+          <form id="query-form">
+            <div class="form-group">
+              <label for="order-email">邮箱</label>
+              <input id="order-email" type="email" placeholder="请输入下单邮箱" required>
+            </div>
+            <div class="form-group">
+              <label for="order-token">密码</label>
+              <input id="order-token" type="text" placeholder="请输入订单密码" required>
+            </div>
+            <button class="apple-btn primary query-submit-btn" type="submit">查询订单</button>
+          </form>
+        </div>
+      </div>
     </section>
 
     <!-- 选购指南 (Help View) -->
