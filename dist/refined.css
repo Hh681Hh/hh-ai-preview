@@ -1,0 +1,1431 @@
+/* ==========================================================================
+   Hh AI — Apple Design System (Cupertino Aesthetic)
+   Minimalist, Luxury, Restrained Motion, Soft Shadows, Generous Whitespace
+   ========================================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap');
+
+:root {
+  --sf-font: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Plus Jakarta Sans", "Inter", "PingFang SC", "Hiragino Sans GB", "MiSans", "Microsoft YaHei", sans-serif;
+  --apple-canvas: #f5f5f7;
+  --apple-surface: #ffffff;
+  --apple-surface-secondary: #fbfbfd;
+  --apple-subtle: #f0f0f2;
+  --apple-text-primary: #1d1d1f;
+  --apple-text-secondary: #6e6e73;
+  --apple-text-tertiary: #a1a1a6;
+  --apple-link: #0071e3;
+  --apple-link-hover: #0077ed;
+  --apple-border: rgba(0, 0, 0, 0.08);
+  --apple-border-light: rgba(0, 0, 0, 0.04);
+  --apple-shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.04);
+  --apple-shadow-md: 0 8px 24px rgba(0, 0, 0, 0.06);
+  --apple-shadow-lg: 0 16px 40px rgba(0, 0, 0, 0.08);
+  --apple-shadow-lift: 0 24px 50px -12px rgba(0, 0, 0, 0.12), 0 6px 16px rgba(0, 0, 0, 0.04);
+  --apple-radius-pill: 980px;
+  --apple-radius-card: 22px;
+  --apple-radius-sm: 12px;
+  --apple-ease: cubic-bezier(0.16, 1, 0.3, 1);
+  --apple-spring: cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+/* Global Reset & Base */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background-color: var(--apple-canvas);
+  color: var(--apple-text-primary);
+  font-family: var(--sf-font);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  line-height: 1.55;
+  letter-spacing: -0.015em;
+  text-rendering: optimizeLegibility;
+  font-feature-settings: "cv02", "cv03", "cv04", "cv11", "tnum" 1;
+}
+
+/* ==========================================================================
+   1. 及肩磨砂导航 (Apple Shoulder Navigation)
+   ========================================================================== */
+header {
+  position: sticky;
+  top: 0;
+  z-index: 999;
+  height: 52px;
+  background: rgba(255, 255, 255, 0.82);
+  -webkit-backdrop-filter: saturate(180%) blur(20px);
+  backdrop-filter: saturate(180%) blur(20px);
+  border-bottom: 1px solid var(--apple-border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 max(24px, calc((100vw - 1200px) / 2));
+  transition: background 0.3s var(--apple-ease);
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+  color: var(--apple-text-primary);
+}
+
+.brand-mark {
+  width: 34px;
+  height: 34px;
+  border-radius: 9.5px;
+  flex-shrink: 0;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.18), 0 1px 3px rgba(0, 0, 0, 0.08);
+  transition: transform 0.25s var(--apple-ease), box-shadow 0.25s var(--apple-ease);
+}
+
+.brand:hover .brand-mark {
+  transform: scale(1.08);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.22);
+}
+
+.brand:active .brand-mark {
+  transform: scale(0.96);
+  transition: transform 0.08s var(--apple-spring);
+}
+
+.brand-name {
+  font-size: 16px;
+  font-weight: 750;
+  letter-spacing: -0.025em;
+  color: var(--apple-text-primary);
+}
+
+header nav {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(0, 0, 0, 0.03);
+  padding: 4px;
+  border-radius: var(--apple-radius-pill);
+  border: 1px solid rgba(0, 0, 0, 0.04);
+}
+
+.nav-item {
+  background: none;
+  border: none;
+  color: var(--apple-text-secondary);
+  font-size: 13px;
+  font-weight: 500;
+  padding: 6px 14px;
+  border-radius: var(--apple-radius-pill);
+  cursor: pointer;
+  transition: all 0.22s var(--apple-ease);
+  letter-spacing: -0.01em;
+  will-change: transform;
+}
+
+.nav-item:hover {
+  color: var(--apple-text-primary);
+  background: rgba(255, 255, 255, 0.8);
+}
+
+.nav-item:active {
+  transform: scale(0.95);
+  transition: transform 0.08s var(--apple-spring);
+}
+
+.nav-item.active {
+  color: var(--apple-text-primary);
+  font-weight: 600;
+  background: #ffffff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.btn-contact {
+  background: rgba(0, 0, 0, 0.05);
+  border: none;
+  color: var(--apple-text-primary);
+  font-size: 12.5px;
+  font-weight: 600;
+  padding: 7px 16px;
+  border-radius: var(--apple-radius-pill);
+  cursor: pointer;
+  transition: all 0.22s var(--apple-ease);
+}
+
+.btn-contact:hover {
+  background: rgba(0, 0, 0, 0.09);
+  transform: translateY(-1px);
+}
+
+.btn-contact:active {
+  transform: scale(0.96);
+  transition: transform 0.08s var(--apple-spring);
+}
+
+/* ==========================================================================
+   2. Hero 巨幕留白区 (Apple Grand Whitespace)
+   ========================================================================== */
+main {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 24px 80px;
+}
+
+.hero {
+  padding: 84px 20px 52px;
+  text-align: center;
+}
+
+.hero-brand-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 14px 5px 6px;
+  background: rgba(255, 255, 255, 0.85);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: var(--apple-radius-pill);
+  font-size: 13px;
+  font-weight: 550;
+  color: var(--apple-text-secondary);
+  margin-bottom: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  transition: all 0.3s var(--apple-ease);
+}
+
+.hero-brand-pill:hover {
+  background: #ffffff;
+  border-color: rgba(0, 113, 227, 0.3);
+  color: var(--apple-text-primary);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px rgba(0, 113, 227, 0.12);
+}
+
+.hero-brand-icon {
+  width: 22px;
+  height: 22px;
+  border-radius: 6px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.18);
+  display: block;
+}
+
+.hero-brand-text {
+  letter-spacing: -0.01em;
+}
+
+.hero-eyebrow {
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  color: #86868b;
+  text-transform: uppercase;
+  margin: 0 0 16px;
+}
+
+.hero h1 {
+  font-size: 58px;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  line-height: 1.06;
+  margin: 0 0 16px;
+  background: linear-gradient(180deg, #1d1d1f 25%, #424245 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.hero-sub {
+  font-size: 19.5px;
+  font-weight: 400;
+  color: var(--apple-text-secondary);
+  max-width: 640px;
+  margin: 0 auto 36px;
+  line-height: 1.5;
+  letter-spacing: -0.015em;
+}
+
+.hero-stats {
+  display: inline-flex;
+  align-items: center;
+  gap: 32px;
+  padding: 14px 32px;
+  background: var(--apple-surface);
+  border: 1px solid var(--apple-border);
+  border-radius: var(--apple-radius-pill);
+  box-shadow: var(--apple-shadow-sm);
+}
+
+.stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.stat strong {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--apple-text-primary);
+  letter-spacing: -0.02em;
+}
+
+.stat span {
+  font-size: 11px;
+  color: var(--apple-text-secondary);
+  margin-top: 2px;
+}
+
+.stat-sep {
+  width: 1px;
+  height: 24px;
+  background: var(--apple-border);
+}
+
+/* ==========================================================================
+   3. 苹果大图商品展台 (Showcase Bento Cards)
+   ========================================================================== */
+.showcase-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 28px;
+  margin: 20px 0 60px;
+}
+
+.showcase-card {
+  background: var(--apple-surface);
+  border: 1px solid rgba(0, 0, 0, 0.07);
+  border-radius: var(--apple-radius-card);
+  padding: 40px 32px 32px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  position: relative;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.03), 0 1px 2px rgba(0, 0, 0, 0.02);
+  transition: transform 0.35s var(--apple-ease), box-shadow 0.35s var(--apple-ease), border-color 0.35s var(--apple-ease);
+  will-change: transform, box-shadow;
+}
+
+.showcase-card:hover {
+  transform: translateY(-6px);
+  box-shadow: var(--apple-shadow-lift);
+  border-color: rgba(0, 0, 0, 0.12);
+}
+
+.card-tier {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--apple-text-secondary);
+  background: var(--apple-subtle);
+  padding: 4px 10px;
+  border-radius: var(--apple-radius-pill);
+}
+
+.card-logo {
+  width: 72px;
+  height: 72px;
+  border-radius: 20px;
+  overflow: hidden;
+  background: #111113;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 24px;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.16), 0 2px 6px rgba(0, 0, 0, 0.08);
+  transition: transform 0.35s var(--apple-ease), box-shadow 0.35s var(--apple-ease);
+  will-change: transform, box-shadow;
+}
+
+.showcase-card:hover .card-logo {
+  transform: scale(1.06) translateY(-2px);
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.22);
+}
+
+.card-logo img, .product-metallic-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  border-radius: 20px;
+}
+
+.showcase-card h3 {
+  font-size: 26px;
+  font-weight: 750;
+  color: var(--apple-text-primary);
+  margin: 0 0 6px;
+  letter-spacing: -0.025em;
+}
+
+.card-spec-tags {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin: 6px 0 22px;
+}
+
+.spec-tag {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--apple-text-primary);
+  background: var(--apple-subtle);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  padding: 3px 9px;
+  border-radius: var(--apple-radius-pill);
+  letter-spacing: -0.01em;
+  transition: all 0.2s var(--apple-ease);
+}
+
+.spec-tag:hover {
+  transform: translateY(-1px);
+  filter: brightness(0.97);
+}
+
+.spec-tag.tag-primary {
+  background: rgba(0, 113, 227, 0.08);
+  color: #0071e3;
+  border-color: rgba(0, 113, 227, 0.18);
+}
+
+.spec-tag.tag-accent {
+  background: rgba(0, 0, 0, 0.05);
+  color: #1d1d1f;
+  border-color: rgba(0, 0, 0, 0.09);
+}
+
+.spec-tag.tag-success {
+  background: rgba(52, 199, 89, 0.1);
+  color: #248a3d;
+  border-color: rgba(52, 199, 89, 0.24);
+}
+
+.benefits-included-note {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--apple-text-primary);
+  margin: 0 0 14px;
+  text-align: left;
+  width: 100%;
+  letter-spacing: -0.01em;
+}
+
+.card-benefits {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 32px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 13px;
+  text-align: left;
+}
+
+.card-benefits li {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 14px;
+  color: var(--apple-text-primary);
+  line-height: 1.45;
+  letter-spacing: -0.012em;
+  padding: 3px 6px;
+  margin: 0 -6px;
+  border-radius: 8px;
+  background: transparent;
+  border: none;
+  transition: transform 0.22s var(--apple-ease), background-color 0.22s var(--apple-ease);
+}
+
+.card-benefits li:hover {
+  background: rgba(0, 0, 0, 0.025);
+  transform: translateX(3px);
+}
+
+.benefit-icon {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  color: var(--apple-link);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.22s var(--apple-ease), color 0.22s var(--apple-ease);
+}
+
+.card-benefits li:hover .benefit-icon {
+  transform: scale(1.15);
+  color: var(--apple-link-hover);
+}
+
+.benefit-icon svg {
+  width: 17px;
+  height: 17px;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  display: block;
+}
+
+.benefit-text {
+  flex: 1;
+  color: #1d1d1f;
+  font-size: 14px;
+  font-weight: 480;
+  letter-spacing: -0.012em;
+}
+
+.card-bottom {
+  margin-top: auto;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding-top: 24px;
+  border-top: 1px solid var(--apple-border-light);
+}
+
+.card-price {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 4px;
+}
+
+.price-num {
+  font-size: 40px;
+  font-weight: 750;
+  color: var(--apple-text-primary);
+  letter-spacing: -0.035em;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+  display: inline-flex;
+  align-items: baseline;
+}
+
+.price-num small {
+  font-size: 20px;
+  font-weight: 600;
+  margin-right: 2px;
+}
+
+.price-period {
+  font-size: 13.5px;
+  font-weight: 500;
+  color: var(--apple-text-secondary);
+}
+
+.price-tbd {
+  font-size: 20px;
+  color: var(--apple-text-secondary);
+  font-weight: 600;
+}
+
+/* Apple High-Contrast Pill Button */
+.apple-btn {
+  background: #1d1d1f;
+  color: #ffffff;
+  border: none;
+  border-radius: var(--apple-radius-pill);
+  padding: 13px 28px;
+  font-size: 14.5px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  cursor: pointer;
+  transition: transform 0.25s var(--apple-ease), background-color 0.25s var(--apple-ease), box-shadow 0.25s var(--apple-ease);
+  width: 100%;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+  will-change: transform;
+}
+
+.apple-btn:hover {
+  background: #000000;
+  transform: translateY(-1.5px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+}
+
+.apple-btn:active {
+  transform: scale(0.965);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+  transition: transform 0.08s var(--apple-spring);
+}
+
+.apple-btn.primary {
+  background: var(--apple-link);
+}
+
+.apple-btn.primary:hover {
+  background: var(--apple-link-hover);
+}
+
+.catalog-footer {
+  text-align: center;
+  font-size: 13px;
+  color: var(--apple-text-secondary);
+  margin-top: 16px;
+}
+
+/* ==========================================================================
+   4. 四大服务保障 (Trust Ribbon)
+   ========================================================================== */
+.trust-ribbon {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+  background: var(--apple-surface);
+  border: 1px solid var(--apple-border);
+  border-radius: var(--apple-radius-card);
+  padding: 28px 32px;
+  margin: 40px 0 60px;
+  box-shadow: var(--apple-shadow-sm);
+}
+
+.trust-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 8px 12px;
+  border-radius: 14px;
+  transition: transform 0.25s var(--apple-ease), background-color 0.25s var(--apple-ease);
+}
+
+.trust-item:hover {
+  background: rgba(0, 0, 0, 0.02);
+  transform: translateY(-2px);
+}
+
+.trust-icon-circle {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: var(--apple-subtle);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  flex-shrink: 0;
+  transition: transform 0.3s var(--apple-ease), background-color 0.3s var(--apple-ease);
+}
+
+.trust-item:hover .trust-icon-circle {
+  transform: scale(1.08);
+  background: rgba(0, 113, 227, 0.08);
+}
+
+.trust-item strong {
+  display: block;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--apple-text-primary);
+  letter-spacing: -0.01em;
+  margin-bottom: 2px;
+}
+
+.trust-item span {
+  display: block;
+  font-size: 12px;
+  color: var(--apple-text-secondary);
+  line-height: 1.4;
+}
+
+/* ==========================================================================
+   5. 实用功能视图 (Utility Views: Orders & Help)
+   ========================================================================== */
+@keyframes appleViewEnter {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.996);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+#shop-view:not([hidden]),
+#orders-view:not([hidden]),
+#help-view:not([hidden]) {
+  animation: appleViewEnter 0.35s var(--apple-ease);
+}
+
+.utility-view {
+  background: var(--apple-surface);
+  border: 1px solid var(--apple-border);
+  border-radius: var(--apple-radius-card);
+  padding: 48px;
+  max-width: 760px;
+  margin: 40px auto 80px;
+  box-shadow: var(--apple-shadow-md);
+}
+
+.section-eyebrow {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  color: var(--apple-link);
+  margin: 0 0 10px;
+  text-transform: uppercase;
+}
+
+.utility-view h2 {
+  font-size: 32px;
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  color: var(--apple-text-primary);
+  margin: 0 0 8px;
+}
+
+.section-desc {
+  font-size: 15px;
+  color: var(--apple-text-secondary);
+  margin: 0 0 36px;
+  line-height: 1.6;
+}
+
+/* 4步履约进度条 */
+.order-stepper {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--apple-surface-secondary);
+  border: 1px solid var(--apple-border);
+  border-radius: 16px;
+  padding: 18px 24px;
+  margin-bottom: 32px;
+}
+
+.step-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.step-num {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: var(--apple-subtle);
+  color: var(--apple-text-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.step-text {
+  font-size: 11px;
+  color: var(--apple-text-secondary);
+  font-weight: 500;
+}
+
+.step-item.active .step-num, .step-item.completed .step-num {
+  background: var(--apple-text-primary);
+  color: #ffffff;
+}
+
+.step-item.active .step-text, .step-item.completed .step-text {
+  color: var(--apple-text-primary);
+  font-weight: 600;
+}
+
+.step-line {
+  flex: 1;
+  height: 2px;
+  background: var(--apple-border);
+  margin: 0 10px 18px;
+}
+
+.step-line.active {
+  background: var(--apple-text-primary);
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--apple-text-secondary);
+  margin-bottom: 8px;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 14px 18px;
+  background: var(--apple-surface-secondary);
+  border: 1px solid var(--apple-border);
+  border-radius: 12px;
+  font-size: 15px;
+  color: var(--apple-text-primary);
+  outline: none;
+  font-family: inherit;
+  transition: border-color 0.2s var(--apple-ease), box-shadow 0.2s var(--apple-ease), background-color 0.2s var(--apple-ease);
+}
+
+.form-group input:focus {
+  background: #ffffff;
+  border-color: var(--apple-link);
+  box-shadow: 0 0 0 4px rgba(0, 113, 227, 0.14);
+}
+
+.query-submit-btn {
+  width: 100%;
+  padding: 14px;
+}
+
+.muted {
+  font-size: 13px;
+  color: var(--apple-text-secondary);
+  margin-top: 16px;
+  line-height: 1.6;
+}
+
+#order-result:not(:empty) {
+  margin-top: 28px;
+  padding: 24px;
+  background: var(--apple-surface-secondary);
+  border: 1px solid var(--apple-border);
+  border-radius: 16px;
+  line-height: 1.8;
+}
+
+/* ==========================================================================
+   6. 选购指南 (Apple Disclosure Accordion)
+   ========================================================================== */
+.faq-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+details {
+  background: var(--apple-surface-secondary);
+  border: 1px solid var(--apple-border);
+  border-radius: 16px;
+  padding: 20px 24px;
+  transition: background-color 0.25s var(--apple-ease), border-color 0.25s var(--apple-ease), box-shadow 0.25s var(--apple-ease);
+}
+
+details:hover {
+  background: #ffffff;
+  border-color: rgba(0, 0, 0, 0.12);
+}
+
+details[open] {
+  background: #ffffff;
+  border-color: rgba(0, 0, 0, 0.14);
+  box-shadow: var(--apple-shadow-sm);
+}
+
+summary {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 15.5px;
+  font-weight: 600;
+  color: var(--apple-text-primary);
+  cursor: pointer;
+  list-style: none;
+  letter-spacing: -0.015em;
+  user-select: none;
+}
+
+summary::-webkit-details-marker {
+  display: none;
+}
+
+.faq-chevron {
+  color: var(--apple-text-secondary);
+  transition: transform 0.35s var(--apple-ease), color 0.2s var(--apple-ease);
+  display: flex;
+}
+
+details[open] .faq-chevron {
+  transform: rotate(180deg);
+  color: var(--apple-link);
+}
+
+details p, .faq-body {
+  color: #48484a;
+  font-size: 14px;
+  line-height: 1.7;
+  margin: 16px 0 4px;
+  padding-top: 14px;
+  border-top: 1px solid var(--apple-border-light);
+}
+
+.faq-body ol {
+  margin: 8px 0;
+  padding-left: 20px;
+}
+
+.faq-body li {
+  margin-bottom: 6px;
+}
+
+/* ==========================================================================
+   7. 弹窗对话框 (Apple Clean Modals)
+   ========================================================================== */
+dialog {
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 24px;
+  padding: 36px;
+  max-width: 540px;
+  width: calc(100% - 40px);
+  background: #ffffff;
+  box-shadow: 0 30px 60px -12px rgba(0, 0, 0, 0.25), 0 10px 24px rgba(0, 0, 0, 0.1);
+  box-sizing: border-box;
+}
+
+dialog::backdrop {
+  background: rgba(0, 0, 0, 0.35);
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+  transition: backdrop-filter 0.3s var(--apple-ease);
+}
+
+dialog[open] {
+  animation: appleModalIn 0.35s var(--apple-ease) forwards;
+}
+
+@keyframes appleModalIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.close {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--apple-subtle);
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  color: var(--apple-text-secondary);
+  cursor: pointer;
+  transition: all 0.2s var(--apple-ease);
+}
+
+.close:hover {
+  background: rgba(0, 0, 0, 0.1);
+  color: var(--apple-text-primary);
+}
+
+.dialog-header h2 {
+  font-size: 26px;
+  font-weight: 700;
+  margin: 0 0 6px;
+}
+
+.dialog-header p {
+  color: var(--apple-text-secondary);
+  font-size: 14px;
+  margin: 0 0 20px;
+}
+
+.contact-info-card {
+  background: var(--apple-surface-secondary);
+  border: 1px solid var(--apple-border);
+  border-radius: 14px;
+  padding: 18px 20px;
+  margin-bottom: 16px;
+}
+
+.contact-info-card strong {
+  display: block;
+  font-size: 15px;
+  margin-bottom: 4px;
+}
+
+.contact-info-card span {
+  font-size: 13px;
+  color: var(--apple-text-secondary);
+}
+
+/* ==========================================================================
+   8. 页脚 (Apple Minimalist Footer)
+   ========================================================================== */
+footer {
+  border-top: 1px solid var(--apple-border);
+  margin-top: 80px;
+  padding: 32px 0 48px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12px;
+  color: var(--apple-text-secondary);
+}
+
+.footer-brand {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--apple-text-primary);
+}
+
+footer p {
+  margin: 4px 0 0;
+}
+
+/* ==========================================================================
+   9. 账户中心、会员状态条与钱包样式 (Apple Unified Account)
+   ========================================================================== */
+.user-header-area {
+  display: flex;
+  align-items: center;
+}
+
+.btn-auth-entry {
+  background: var(--apple-text-primary);
+  color: #ffffff;
+  border: none;
+  border-radius: var(--apple-radius-pill);
+  padding: 6px 14px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s var(--apple-ease);
+}
+
+.btn-auth-entry:hover {
+  background: #333336;
+}
+
+.user-session-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.user-profile-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(0, 0, 0, 0.05);
+  border: none;
+  border-radius: var(--apple-radius-pill);
+  padding: 5px 12px;
+  cursor: pointer;
+  color: var(--apple-text-primary);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.user-avatar-badge {
+  width: 18px;
+  height: 18px;
+  background: var(--apple-text-primary);
+  color: #ffffff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.wallet-balance-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: rgba(0, 113, 227, 0.08);
+  border: 1px solid rgba(0, 113, 227, 0.15);
+  border-radius: var(--apple-radius-pill);
+  padding: 4px 10px;
+  cursor: pointer;
+  color: var(--apple-link);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.btn-user-logout {
+  background: transparent;
+  border: none;
+  color: var(--apple-text-secondary);
+  font-size: 11px;
+  cursor: pointer;
+  padding: 4px 8px;
+}
+
+.btn-user-logout:hover {
+  color: #b91c1c;
+}
+
+/* ==========================================================================
+   10. 自动发货卡密与自动对卡兑换卡片 (Apple Wallet / Receipt Aesthetic)
+   ========================================================================== */
+.fulfillment-redeem-container {
+  background: #ffffff;
+  border: 1px solid var(--apple-border);
+  border-radius: var(--apple-radius-card);
+  padding: 32px;
+  margin: 24px 0;
+  text-align: left;
+  box-shadow: var(--apple-shadow-md);
+}
+
+.redeem-header {
+  margin-bottom: 24px;
+  padding-bottom: 18px;
+  border-bottom: 1px solid var(--apple-border-light);
+}
+
+.redeem-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #ecfdf5;
+  color: #059669;
+  border: 1px solid #a7f3d0;
+  padding: 4px 12px;
+  border-radius: var(--apple-radius-pill);
+  font-size: 12px;
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+
+.redeem-header h3 {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--apple-text-primary);
+  margin: 4px 0 6px;
+  letter-spacing: -0.02em;
+}
+
+.redeem-header p {
+  font-size: 13.5px;
+  color: var(--apple-text-secondary);
+  margin: 0;
+  line-height: 1.5;
+}
+
+/* 提货卡密盒子 */
+.card-secret-box {
+  background: var(--apple-text-primary);
+  border-radius: 16px;
+  padding: 20px 24px;
+  margin-bottom: 20px;
+  color: #ffffff;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+}
+
+.secret-label {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12px;
+  color: #a1a1a6;
+  margin-bottom: 10px;
+  font-weight: 600;
+}
+
+.secret-status-tag {
+  color: #34d399;
+  font-size: 11px;
+}
+
+.secret-val-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.secret-code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 20px;
+  font-weight: 700;
+  color: #ffffff;
+  letter-spacing: 0.5px;
+  word-break: break-all;
+  user-select: all;
+}
+
+.btn-copy-secret {
+  background: var(--apple-link);
+  color: #ffffff;
+  border: none;
+  border-radius: var(--apple-radius-pill);
+  padding: 8px 18px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s var(--apple-ease);
+  white-space: nowrap;
+}
+
+.btn-copy-secret:hover {
+  background: var(--apple-link-hover);
+}
+
+/* 自动对卡网站预留槽位 */
+.redeem-portal-slot {
+  background: var(--apple-surface-secondary);
+  border: 1px dashed var(--apple-border);
+  border-radius: 16px;
+  padding: 18px 20px;
+  margin-bottom: 24px;
+}
+
+.slot-label {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12px;
+  color: var(--apple-text-secondary);
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+
+.slot-notice-badge {
+  background: #fef3c7;
+  color: #b45309;
+  padding: 2px 8px;
+  border-radius: var(--apple-radius-pill);
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.slot-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.portal-link {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+  background: #ffffff;
+  border: 1px solid var(--apple-border);
+  padding: 10px 16px;
+  border-radius: var(--apple-radius-pill);
+  flex: 1;
+  min-width: 240px;
+  transition: all 0.2s var(--apple-ease);
+}
+
+.portal-link:hover {
+  border-color: var(--apple-link);
+  box-shadow: 0 2px 8px rgba(0, 113, 227, 0.08);
+}
+
+.portal-url-text {
+  font-family: ui-monospace, SFMono-Regular, monospace;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--apple-link);
+  word-break: break-all;
+}
+
+.portal-go-tag {
+  font-size: 11px;
+  color: var(--apple-text-secondary);
+  margin-left: auto;
+  font-weight: 600;
+}
+
+.btn-copy-portal {
+  background: var(--apple-surface);
+  border: 1px solid var(--apple-border);
+  color: var(--apple-text-primary);
+  border-radius: var(--apple-radius-pill);
+  padding: 8px 16px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-copy-portal:hover {
+  background: var(--apple-subtle);
+}
+
+.slot-tip {
+  font-size: 11px;
+  color: var(--apple-text-tertiary);
+  margin-top: 8px;
+}
+
+/* 3步极速兑换指引 */
+.redeem-guide-box {
+  background: var(--apple-surface-secondary);
+  border-radius: 16px;
+  padding: 20px 24px;
+  margin-bottom: 20px;
+}
+
+.guide-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--apple-text-primary);
+  margin-bottom: 14px;
+}
+
+.guide-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.guide-step-item {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.step-badge {
+  background: var(--apple-subtle);
+  color: var(--apple-text-primary);
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 6px;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.step-content strong {
+  display: block;
+  font-size: 13px;
+  color: var(--apple-text-primary);
+  margin-bottom: 2px;
+}
+
+.step-content p {
+  font-size: 12px;
+  color: var(--apple-text-secondary);
+  margin: 0;
+  line-height: 1.5;
+}
+
+.redeem-warranty-footer {
+  border-top: 1px solid var(--apple-border-light);
+  padding-top: 16px;
+  font-size: 12px;
+  color: var(--apple-text-secondary);
+}
+
+.warranty-badge-row {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 8px;
+}
+
+.badge-item {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--apple-text-primary);
+  background: var(--apple-surface-secondary);
+  padding: 3px 8px;
+  border-radius: 6px;
+}
+
+/* ==========================================================================
+   11. 响应式适配 (Mobile & Tablet)
+   ========================================================================== */
+@media (max-width: 1024px) {
+  .showcase-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .trust-ribbon {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  header {
+    height: auto;
+    padding: 12px 16px;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  header nav {
+    order: 3;
+    width: 100%;
+    justify-content: space-around;
+    gap: 8px;
+  }
+  .hero {
+    padding: 40px 10px 30px;
+  }
+  .hero h1 {
+    font-size: 36px;
+  }
+  .hero-sub {
+    font-size: 16px;
+  }
+  .hero-stats {
+    flex-direction: row;
+    padding: 10px 16px;
+    gap: 16px;
+    width: 100%;
+    justify-content: space-between;
+  }
+  .stat strong {
+    font-size: 15px;
+  }
+  .stat span {
+    font-size: 10px;
+  }
+  .showcase-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+  .showcase-card {
+    padding: 32px 24px 24px;
+  }
+  .trust-ribbon {
+    grid-template-columns: 1fr;
+    gap: 16px;
+    padding: 20px;
+  }
+  .utility-view {
+    padding: 28px 20px;
+    margin: 20px auto 40px;
+  }
+  .order-stepper {
+    padding: 14px 16px;
+  }
+  footer {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+}

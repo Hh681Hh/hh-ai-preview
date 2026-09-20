@@ -1,0 +1,36 @@
+<svg viewBox="0 0 128 128" width="128" height="128" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Apple Deep Space Black Squircle -->
+  <rect x="4" y="4" width="120" height="120" rx="28" fill="#0c0c0e"/>
+  
+  <!-- Capital H: Hollow Outline -->
+  <path d="M 16 26
+           L 29 26
+           L 29 58
+           L 53 58
+           L 53 26
+           L 66 26
+           L 66 102
+           L 53 102
+           L 53 70
+           L 29 70
+           L 29 102
+           L 16 102
+           Z" 
+        stroke="#ffffff" stroke-width="2.6" stroke-linejoin="miter" stroke-miterlimit="3" fill="none"/>
+
+  <!-- Lowercase h: Hollow Outline -->
+  <path d="M 69 26
+           L 82 26
+           L 82 54
+           C 82 45, 88.5 41.5, 97 41.5
+           C 105.5 41.5, 112 46.5, 112 56
+           L 112 102
+           L 99 102
+           L 99 57.5
+           C 99 51.5, 96 48.5, 91 48.5
+           C 86 48.5, 82 52, 82 58
+           L 82 102
+           L 69 102
+           Z" 
+        stroke="#ffffff" stroke-width="2.6" stroke-linejoin="miter" stroke-miterlimit="3" fill="none"/>
+</svg>

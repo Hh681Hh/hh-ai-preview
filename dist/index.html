@@ -1,0 +1,287 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hh AI — 企业级 AI 旗舰订阅与卡密直充平台</title>
+  <meta name="description" content="专业提供 ChatGPT Plus / Pro 5x / Pro 20x 算力订阅。官方企业级正规卡源，秒发专属卡密，自动兑换直接卡充，30天全周期质保包赔。">
+  <link rel="icon" type="image/svg+xml" href="hh-logo.svg?v=2026">
+  <link rel="icon" type="image/png" sizes="64x64" href="favicon.png?v=2026">
+  <link rel="apple-touch-icon" href="hh-logo.png?v=2026">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="payment.css">
+  <link rel="stylesheet" href="refined.css">
+  <link rel="stylesheet" href="checkout.css">
+  <link rel="stylesheet" href="account.css">
+</head>
+<body>
+
+  <!-- 及肩磨砂导航 -->
+  <header>
+    <a class="brand" href="#" aria-label="Hh AI 首页">
+      <svg class="brand-mark" viewBox="0 0 128 128" width="128" height="128" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Apple Deep Space Black Squircle -->
+  <rect x="4" y="4" width="120" height="120" rx="28" fill="#0c0c0e"/>
+  
+  <!-- Capital H: Hollow Outline -->
+  <path d="M 16 26
+           L 29 26
+           L 29 58
+           L 53 58
+           L 53 26
+           L 66 26
+           L 66 102
+           L 53 102
+           L 53 70
+           L 29 70
+           L 29 102
+           L 16 102
+           Z" 
+        stroke="#ffffff" stroke-width="2.6" stroke-linejoin="miter" stroke-miterlimit="3" fill="none"/>
+
+  <!-- Lowercase h: Hollow Outline -->
+  <path d="M 69 26
+           L 82 26
+           L 82 54
+           C 82 45, 88.5 41.5, 97 41.5
+           C 105.5 41.5, 112 46.5, 112 56
+           L 112 102
+           L 99 102
+           L 99 57.5
+           C 99 51.5, 96 48.5, 91 48.5
+           C 86 48.5, 82 52, 82 58
+           L 82 102
+           L 69 102
+           Z" 
+        stroke="#ffffff" stroke-width="2.6" stroke-linejoin="miter" stroke-miterlimit="3" fill="none"/>
+</svg>
+      <span class="brand-name">Hh <span class="brand-ai">AI</span></span>
+    </a>
+    <nav aria-label="主导航">
+      <button class="nav-item active" data-view="shop">商店</button>
+      <button class="nav-item" data-view="orders">查单</button>
+      <button class="nav-item" data-view="help">指南</button>
+    </nav>
+    <div class="header-actions">
+      <div id="user-header-area" class="user-header-area"></div>
+      <button class="btn-contact" data-action="contact">联系客服</button>
+    </div>
+  </header>
+
+  <main>
+    <!-- Hero 巨幕留白区 -->
+    <section class="hero" id="hero">
+      <p class="hero-eyebrow">ENTERPRISE AI SUBSCRIPTION</p>
+      <h1>赋能顶尖创造力。</h1>
+      <p class="hero-sub">官方正规企业卡源 · 专属卡密直充 · 30天全周期质保</p>
+      <div class="hero-stats">
+        <div class="stat"><strong>30s</strong><span>自动发放卡密</span></div>
+        <div class="stat-sep"></div>
+        <div class="stat"><strong>100%</strong><span>官方正规卡源</span></div>
+        <div class="stat-sep"></div>
+        <div class="stat"><strong>7×24H</strong><span>全天候自动交付</span></div>
+      </div>
+    </section>
+
+    <!-- 商店主区域 (Shop View) — 全宽展台 -->
+    <section id="shop-view">
+      <!-- 隐藏的分类容器（保留 JS 兼容） -->
+      <div id="categories" style="display:none"></div>
+      <div class="catalog-heading" style="display:none">
+        <h2 id="category-title"></h2>
+      </div>
+
+      <!-- 筛选与搜索（保留 JS 兼容，视觉隐藏） -->
+      <div class="filters" style="display:none">
+        <div class="filter-group">
+          <button class="selected" data-type="全部" aria-pressed="true">全部方案</button>
+          <button data-type="自有账号代充" aria-pressed="false">自有账号直充</button>
+        </div>
+        <select id="sort" aria-label="商品排序">
+          <option value="default">综合推荐</option>
+          <option value="low">价格从低到高</option>
+          <option value="high">价格从高到低</option>
+        </select>
+      </div>
+      <input id="search" type="search" placeholder="搜索" aria-label="搜索订阅" style="display:none">
+
+      <!-- 商品卡片渲染区 — 全宽三列展台 -->
+      <div id="products" class="showcase-grid"></div>
+
+      <div class="catalog-footer">
+        <span id="result-count"></span>
+        <span id="total" style="display:none"></span>
+      </div>
+    </section>
+
+    <!-- 保障 Ribbon -->
+    <section class="trust-ribbon">
+      <div class="trust-item">
+        <div class="trust-icon-circle">⚡</div>
+        <div><strong>秒级自动交付</strong><span>付款确认后全自动发放卡密</span></div>
+      </div>
+      <div class="trust-item">
+        <div class="trust-icon-circle">🛡</div>
+        <div><strong>正规合规质保</strong><span>纯净海外企业合规卡源</span></div>
+      </div>
+      <div class="trust-item">
+        <div class="trust-icon-circle">🔒</div>
+        <div><strong>隐私零留存</strong><span>无需提供账号密码</span></div>
+      </div>
+      <div class="trust-item">
+        <div class="trust-icon-circle">💬</div>
+        <div><strong>一对一售后</strong><span>专属技术顾问答疑</span></div>
+      </div>
+    </section>
+
+    <!-- 订单查询 (Orders View) -->
+    <section id="orders-view" class="utility-view" hidden>
+      <p class="section-eyebrow">ORDER TRACKING</p>
+      <h2>订单追踪</h2>
+      <p class="section-desc">输入订单编号或查询凭证，实时追踪履约进度。</p>
+
+      <div class="order-stepper">
+        <div class="step-item completed"><div class="step-num">1</div><div class="step-text">提交</div></div>
+        <div class="step-line active"></div>
+        <div class="step-item active"><div class="step-num">2</div><div class="step-text">付款</div></div>
+        <div class="step-line"></div>
+        <div class="step-item"><div class="step-num">3</div><div class="step-text">出卡</div></div>
+        <div class="step-line"></div>
+        <div class="step-item"><div class="step-num">4</div><div class="step-text">完成</div></div>
+      </div>
+
+      <form id="query-form">
+        <div class="form-group">
+          <label for="order-number">订单编号</label>
+          <input id="order-number" placeholder="输入订单号或留空">
+        </div>
+        <button class="apple-btn primary query-submit-btn">查询订单</button>
+      </form>
+      <p class="muted">浏览器会暂存最近一笔订单信息。更换设备请备好 64 位查询凭证。</p>
+      <div id="order-result" aria-live="polite"></div>
+    </section>
+
+    <!-- 选购指南 (Help View) -->
+    <section id="help-view" class="utility-view" hidden>
+      <p class="section-eyebrow">FAQ & GUIDANCE</p>
+      <h2>选购与售后常见问题</h2>
+      <p class="section-desc">了解正规代充流程与质保条款。</p>
+
+      <div class="faq-list">
+        <details open>
+          <summary>
+            <span>Q1. 自有账号代充会泄露我的密码吗？</span>
+            <span class="faq-chevron">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+            </span>
+          </summary>
+          <p>绝对不会。我们采用官方正规的代充开通技术，全程<strong>绝不需要提供你的登录密码</strong>。你的聊天历史、个人数据完全保留且仅你可见。</p>
+        </details>
+
+        <details>
+          <summary>
+            <span>Q2. 自动兑换卡（卡密）怎么使用？</span>
+            <span class="faq-chevron">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+            </span>
+          </summary>
+          <div class="faq-body">
+            <p><strong>3 步极速完成兑换：</strong></p>
+            <ol>
+              <li>登录你的 ChatGPT 账号，点击「升级」获取 Stripe 付款链接；</li>
+              <li>打开订单中的【自动对卡兑换网站】；</li>
+              <li>粘贴卡密与付款链接，点击「立即兑换」，30 秒自动到账。</li>
+            </ol>
+          </div>
+        </details>
+
+        <details>
+          <summary>
+            <span>Q3. 购买后如何获得卡密并充值？</span>
+            <span class="faq-chevron">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+            </span>
+          </summary>
+          <div class="faq-body">
+            <ol>
+              <li><strong>获取卡密</strong>：支付成功后订单页面即时发放专属卡密；</li>
+              <li><strong>前往兑换网站</strong>：点击订单中预留的兑换链接；</li>
+              <li><strong>直接充值</strong>：粘贴卡密并输入账号信息，30 秒到账。</li>
+            </ol>
+          </div>
+        </details>
+
+        <details>
+          <summary>
+            <span>Q4. 卡源正规吗？会封号吗？</span>
+            <span class="faq-chevron">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+            </span>
+          </summary>
+          <p>所有订阅均通过官方正规渠道，使用海外真实 Visa 实体卡扣费开通（菲律宾合规低价区域）。功能完整无阉割，支持 Thinking、Codex 等全部最新特性，<strong>坚决杜绝黑卡、虚拟卡与盗刷卡源</strong>。安全稳定如自购。</p>
+        </details>
+
+        <details>
+          <summary>
+            <span>Q5. 掉单或被误封怎么办？</span>
+            <span class="faq-chevron">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+            </span>
+          </summary>
+          <p><strong>全周期 30 天质保</strong>。因卡源原因掉落，凭订单号免费补开；不可恢复则按剩余天数全额退款。</p>
+        </details>
+      </div>
+    </section>
+
+    <!-- 页脚 -->
+    <footer>
+      <div class="footer-left">
+        <span class="footer-brand">Hh AI</span>
+        <p>企业级 AI 订阅与卡密直充平台</p>
+      </div>
+      <div class="footer-right">
+        <span>© 2026 Hh AI Enterprise. All Rights Reserved.</span>
+      </div>
+    </footer>
+  </main>
+
+  <!-- 详情弹窗 -->
+  <dialog id="product-dialog">
+    <button class="close" aria-label="关闭详情">×</button>
+    <div id="product-detail"></div>
+  </dialog>
+
+  <!-- 客服弹窗 -->
+  <dialog id="contact-dialog">
+    <button class="close" aria-label="关闭客服">×</button>
+    <div class="dialog-header">
+      <p class="section-eyebrow">SUPPORT</p>
+      <h2>联系客服</h2>
+      <p>如有充值、续费或售后问题，请联系我们。</p>
+    </div>
+    <div class="contact-info-card">
+      <strong>在线人工支持</strong>
+      <span>服务时间：每日 09:00 - 24:00</span>
+    </div>
+    <p class="muted">咨询时请提供订单编号，切勿向任何人透露密码或验证码。</p>
+    <button class="apple-btn primary wide close-contact">返回商城</button>
+  </dialog>
+
+  <!-- 客户登录/注册弹窗 -->
+  <dialog id="auth-dialog"></dialog>
+
+  <!-- 个人钱包与充值弹窗 -->
+  <dialog id="wallet-dialog"></dialog>
+
+  <!-- 个人中心/历史订单/流水弹窗 -->
+  <dialog id="user-center-dialog"></dialog>
+
+  <script src="preview.js"></script>
+  <script src="app.js"></script>
+  <script src="account.js"></script>
+  <script src="payment.js"></script>
+</body>
+</html>
