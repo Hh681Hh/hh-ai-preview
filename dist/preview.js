@@ -218,20 +218,25 @@
     }
 
     // 10. Orders List
-    if (path.startsWith('/api/commerce/orders') && method === 'GET') {
-      const parts = path.split('/');
-      if (parts.length > 4) {
-        const orderId = decodeURIComponent(parts[4]);
-        const order = storage.getOrders().find(o => o.id === orderId || o.order_no === orderId);
-        if (order) return jsonResponse({ status_code: 0, data: { order } });
-        return jsonResponse({ error: '订单未找到' }, 404);
+    if (path === '/api/commerce/orders' && method === 'GET') {
+      const orders = storage.getOrders();
+      const authHeader = options.headers?.Authorization || (input instanceof Request ? input.headers.get('Authorization') : '');
+      let resultOrders = orders;
+      if (authHeader && authHeader.startsWith('Guest ')) {
+        try {
+          const decoded = atob(authHeader.slice(6).replace(/-/g, '+').replace(/_/g, '/'));
+          const [guestEmail, guestToken] = decoded.split('\n');
+          if (guestEmail) {
+            resultOrders = orders.filter(o => o.email?.toLowerCase() === guestEmail.toLowerCase());
+          }
+        } catch {}
       }
-      return jsonResponse({ status_code: 0, data: { orders: storage.getOrders() } });
+      return jsonResponse({ status_code: 0, data: { orders: resultOrders }, orders: resultOrders });
     }
 
-    // 11. Create Order
+    // 11. Create Order (supports guest & member)
     if (path === '/api/commerce/orders' && method === 'POST') {
-      const { productId, quantity = 1, email } = body;
+      const { productId, quantity = 1, email, token } = body;
       const product = PRODUCTS.find(p => p.id === productId) || PRODUCTS[0];
       const orderId = 'HH' + Date.now().toString().slice(-8);
       const totalAmountCents = product.amountCents * quantity;
@@ -244,45 +249,51 @@
         product_name: product.name,
         quantity,
         total_amount_cents: totalAmountCents,
+        total_amount: (totalAmountCents / 100).toFixed(2),
+        currency: 'CNY',
         status: 'pending',
         created_at: Date.now(),
-        expires_at: Date.now() + 1800000,
-        email: email || 'customer@hh.ai',
+        expires_at: new Date(Date.now() + 1800000).toISOString(),
+        email: email || 'guest@hh.ai',
+        token: token || '',
         fulfillment: null
       };
       storage.saveOrder(order);
-      return jsonResponse({ status_code: 0, data: { order } });
+      return jsonResponse({ status_code: 0, data: { order }, order });
     }
 
-    // 12. Checkout
+    // 12. Checkout (supports guest & member)
     if (path.match(/\/api\/commerce\/orders\/[^\/]+\/checkout/) && method === 'POST') {
       const orderId = path.split('/')[4];
-      const order = storage.getOrders().find(o => o.id === orderId) || {
+      const order = storage.getOrders().find(o => o.id === orderId || o.order_no === orderId) || {
         id: orderId,
+        order_no: orderId,
         total_amount_cents: 13500,
+        product_id: 'gpt-plus',
         product_name: 'ChatGPT Plus',
         quantity: 1
       };
       const usdtAmt = (order.total_amount_cents / 720).toFixed(2);
+      const paymentData = {
+        order_id: order.id,
+        channel_id: body.channel_id || 1,
+        channel_name: body.channel_id === 2 ? 'USDT - BEP20 (BSC网络)' : 'USDT - TRC20 (TRX网络)',
+        amount_cny: (order.total_amount_cents / 100).toFixed(2),
+        amount_usdt: usdtAmt,
+        currency: 'USDT',
+        crypto_address: 'TQn9Y2khEsLJW1ChVWFMSMeSTow5KaxUJJ',
+        network: body.channel_id === 2 ? 'BEP20' : 'TRC20',
+        pay_url: `${location.origin}/?order=${order.id}`,
+        expires_at: Date.now() + 900000
+      };
       return jsonResponse({
         status_code: 0,
-        data: {
-          payment: {
-            order_id: order.id,
-            channel_id: body.channel_id || 1,
-            channel_name: body.channel_id === 2 ? 'USDT - BEP20 (BSC网络)' : 'USDT - TRC20 (TRX网络)',
-            amount_cny: (order.total_amount_cents / 100).toFixed(2),
-            amount_usdt: usdtAmt,
-            currency: 'USDT',
-            crypto_address: 'TQn9Y2khEsLJW1ChVWFMSMeSTow5KaxUJJ',
-            network: body.channel_id === 2 ? 'BEP20' : 'TRC20',
-            expires_at: Date.now() + 900000
-          }
-        }
+        data: { payment: paymentData },
+        payment: paymentData
       });
     }
 
-    // 13. Query Order Single
+    // 13. Query Order Single (supports guest & member)
     if (path.match(/\/api\/commerce\/orders\/[^\/]+$/) && method === 'GET') {
       const orderId = path.split('/')[4];
       const orders = storage.getOrders();
@@ -292,15 +303,34 @@
           id: orderId,
           order_no: orderId,
           title: 'ChatGPT Plus × 1',
+          product_id: 'gpt-plus',
           total_amount_cents: 13500,
+          total_amount: '135.00',
+          currency: 'CNY',
           status: 'paid',
           fulfillment: {
+            payload: 'Hh-PLUS-88F2-A901-2026',
             card_keys: ['Hh-PLUS-88F2-A901-2026'],
             redeem_url: 'https://chatgpt.com/'
-          }
+          },
+          card_key: 'Hh-PLUS-88F2-A901-2026'
         };
+      } else {
+        // In interactive demo, simulate payment auto-confirm after 2 seconds or on query
+        if (order.status === 'pending') {
+          order.status = 'paid';
+          const cardType = (order.product_id || 'PLUS').toUpperCase().replace(/[^A-Z0-9]/g, '');
+          const cardKey = `Hh-${cardType}-88F2-A901-2026`;
+          order.fulfillment = {
+            payload: cardKey,
+            card_keys: [cardKey],
+            redeem_url: 'https://chatgpt.com/'
+          };
+          order.card_key = cardKey;
+          storage.saveOrder(order);
+        }
       }
-      return jsonResponse({ status_code: 0, data: { order } });
+      return jsonResponse({ status_code: 0, data: { order }, order });
     }
 
     // Fallback default

@@ -279,7 +279,8 @@ document.addEventListener('keydown', e => {
 });
 
 render();
-view('shop');
+const initialView = new URLSearchParams(location.search).get('view') || 'shop';
+view(initialView);
 
 if (document.modelContext?.registerTool) {
   try {

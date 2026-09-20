@@ -38,12 +38,15 @@
   }
 
   function extractCardKey(order) {
+    if (order?.fulfillment?.card_keys?.length) return order.fulfillment.card_keys[0];
+    if (order?.fulfillment?.card_key) return order.fulfillment.card_key;
     const rawPayloads = [order, ...(order.children || [])].flatMap(o => o.fulfillment?.payload ? [o.fulfillment.payload] : []);
     if (rawPayloads.length && rawPayloads[0]) {
       const p = rawPayloads[0];
       if (typeof p === 'string' && p.trim()) return p.trim();
       if (p.card_secret || p.card_key || p.code || p.secret) return String(p.card_secret || p.card_key || p.code || p.secret);
     }
+    if (order?.card_key) return order.card_key;
     return null;
   }
 
@@ -261,15 +264,7 @@
       e.preventDefault();
       e.stopImmediatePropagation();
       const productId = b.dataset.product;
-      sessionStorage.setItem('hh-pending-product', productId);
-      Promise.resolve(window.hhAccount?.ready).then(() => {
-        if (!window.hhAccount?.user) {
-          window.hhAccount?.openAuth('login');
-          return;
-        }
-        sessionStorage.removeItem('hh-pending-product');
-        location.href = '/?checkout=' + encodeURIComponent(productId);
-      });
+      location.href = '/?checkout=' + encodeURIComponent(productId);
       return;
     }
     if (checkoutId) {
@@ -366,12 +361,6 @@
     if (!p?.available) return;
 
     const user = window.hhAccount?.user;
-    if (!user) {
-      $('#product-detail').innerHTML = '<section class="checkout-panel"><h2>请先登录或注册</h2><p>订单、付款状态和兑换卡密都会保存在客户账户中。</p><button class="primary wide" id="checkout-required-login">登录 / 注册后继续 →</button></section>';
-      $('#checkout-required-login')?.addEventListener('click', () => window.hhAccount?.openAuth('login'));
-      window.hhAccount?.openAuth('login');
-      return;
-    }
     const userBalance = Number(user?.wallet?.balance || 0);
 
     $('#product-detail').innerHTML = `
@@ -407,8 +396,9 @@
           <!-- 3. 购买方式与邮箱密码 (参考图核心第三块) -->
           <section class="checkout-panel">
             <h2 style="font-size:16px;margin-bottom:6px;">购买方式</h2>
-            <div class="purchase-pills-row">
-              <button type="button" class="purchase-pill-btn ${user ? 'active' : ''}" id="pill-member-mode">${user ? '✓ 会员已登录' : '登录会员购买'}</button>
+            <div class="purchase-pills-row" style="display:flex;gap:10px;margin:12px 0 16px;flex-wrap:wrap;">
+              <button type="button" class="purchase-pill-btn ${!user ? 'active' : ''}" id="pill-guest-mode">⚡ 游客直接购买（免登录）</button>
+              <button type="button" class="purchase-pill-btn ${user ? 'active' : ''}" id="pill-member-mode">${user ? '✓ 会员已登录' : '👤 会员登录购买（可享余额秒付）'}</button>
             </div>
 
             ${user ? `
@@ -422,12 +412,12 @@
             ` : `
               <div class="checkout-dual-inputs">
                 <div class="checkout-field-col">
-                  <label class="checkout-field-label" for="purchase-email">邮箱（用于查询订单）</label>
-                  <input id="purchase-email" class="checkout-field-input" type="email" maxlength="254" autocomplete="email" placeholder="邮箱（用于查询订单）">
+                  <label class="checkout-field-label" for="purchase-email">接收邮箱（用于接收卡密与查单）</label>
+                  <input id="purchase-email" class="checkout-field-input" type="email" maxlength="254" autocomplete="email" placeholder="输入可接收卡密的邮箱">
                 </div>
                 <div class="checkout-field-col">
-                  <label class="checkout-field-label" for="purchase-password">订单密码</label>
-                  <input id="purchase-password" class="checkout-field-input" type="text" maxlength="64" autocomplete="off" placeholder="订单密码">
+                  <label class="checkout-field-label" for="purchase-password">订单查询密码</label>
+                  <input id="purchase-password" class="checkout-field-input" type="text" maxlength="64" autocomplete="off" placeholder="设置4位以上查询密码">
                 </div>
               </div>
 
@@ -435,8 +425,8 @@
               <div class="checkout-guide-note">
                 <strong>填写说明:</strong>
                 <ul>
-                  <li><b>邮箱：</b>请填写一个可接收邮件的邮箱，您在付款后我们可通过该邮箱向您发送商品信息并可通过该邮箱联系您</li>
-                  <li><b>订单密码：</b>请自行设置一个复杂密码并妥善保管，该密码用于您在购买之后，通过“游客查单”菜单，查询您所购买的商品</li>
+                  <li><b>接收邮箱：</b>请填写常用邮箱，支付成功后系统将向该邮箱发放专属 ChatGPT 兑换卡密及官方兑换链接。</li>
+                  <li><b>订单密码：</b>请自行设置一个 4 位以上查询密码，该密码用于您在购买之后，通过顶部“查单”随时提取卡密。</li>
                 </ul>
               </div>
             `}
@@ -552,10 +542,6 @@
       let popup = null;
       try {
         const isMember = Boolean(window.hhAccount?.user);
-        if (!isMember) {
-          window.hhAccount?.openAuth('login');
-          throw Error('请先登录或注册客户账户');
-        }
         let email = ($('#purchase-email')?.value || '').trim().toLowerCase();
         let orderPassword = ($('#purchase-password')?.value || '').trim();
         const quantity = Number($('#pay-quantity')?.value || 1);
@@ -565,9 +551,10 @@
             throw Error('请填写正确的邮箱地址（用于接收卡密与后续查单）');
           }
           if (!orderPassword || orderPassword.length < 4) {
-            throw Error('请设置订单密码（至少 4 位，用于后续在“查单”功能查询商品）');
+            throw Error('请设置订单查询密码（至少 4 位，用于后续通过“查单”功能提取卡密）');
           }
         } else {
+          email = window.hhAccount?.user?.email || email;
           orderPassword = orderPassword || 'member-authenticated';
         }
 
@@ -590,7 +577,7 @@
           if (popup) popup.opener = null;
         }
 
-        const { order } = await api('/api/commerce/orders', {
+        const res = await api('/api/commerce/orders', {
           data: {
             productId: id,
             quantity,
@@ -600,18 +587,20 @@
             member: isMember
           }
         });
-        c.id = order.order_no;
+        const order = res.order || res.data?.order;
+        c.id = order.order_no || order.id;
         save(c);
 
         // If user has balance and clicked "balance pay", immediately execute balance payment!
         if (canUseBalance) {
           button.textContent = '正在使用账户余额扣款…';
           try {
-            const { payment } = await api(`/api/commerce/orders/${encodeURIComponent(c.id)}/checkout`, {
+            const payRes = await api(`/api/commerce/orders/${encodeURIComponent(c.id)}/checkout`, {
               data: { useBalance: true, channelId: 0 },
               access: null
             });
-            if (payment.order_paid) {
+            const payment = payRes.payment || payRes.data?.payment;
+            if (payment?.order_paid) {
               await window.hhAccount?.refreshUser();
               showPaidSuccess(order, c);
               return;
@@ -623,10 +612,11 @@
 
         // Online cashier payment
         button.textContent = '正在前往在线收银台…';
-        const { payment } = await api(`/api/commerce/orders/${encodeURIComponent(c.id)}/checkout`, {
+        const checkRes = await api(`/api/commerce/orders/${encodeURIComponent(c.id)}/checkout`, {
           data: { channelId: preferredChannel },
           access: isMember ? null : c
         });
+        const payment = checkRes.payment || checkRes.data?.payment || {};
 
         if (payment.order_paid) {
           popup?.close();
@@ -634,15 +624,16 @@
           return;
         }
 
-        const u = new URL(payment.pay_url);
-        const localTest = location.hostname === '127.0.0.1' && ['http://127.0.0.1:4290', 'http://127.0.0.1:4180', 'http://127.0.0.1:4181'].includes(u.origin);
-        if ((u.protocol !== 'https:' && !localTest) || u.username || u.password) throw Error('支付链接无效');
-
-        if (popup && !popup.closed) {
-          popup.location.replace(u.href);
+        let payUrlStr = payment.pay_url || '';
+        if (!payUrlStr.startsWith('http://') && !payUrlStr.startsWith('https://')) {
+          payUrlStr = new URL(payUrlStr || ('/?order=' + encodeURIComponent(c.id)), location.origin).href;
         }
 
-        showWaitingForPayment(order, c, u.href);
+        if (popup && !popup.closed) {
+          popup.location.replace(payUrlStr);
+        }
+
+        showWaitingForPayment(order, c, payUrlStr);
       } catch (e) {
         popup?.close();
         error(e);

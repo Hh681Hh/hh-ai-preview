@@ -1099,10 +1099,6 @@
     state.settings = cfg;
     updateHeader();
     notifyStateChange();
-    if (!state.user && !sessionStorage.getItem('hh-auth-welcome-seen')) {
-      sessionStorage.setItem('hh-auth-welcome-seen', '1');
-      openAuth('login');
-    }
     return state.user;
   });
 
