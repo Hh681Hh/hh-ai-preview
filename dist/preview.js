@@ -73,7 +73,7 @@
     const url = new URL(urlStr, location.href);
 
     // Only intercept /api/ endpoints
-    if (!url.pathname.startsWith('/api/')) {
+    if (url.origin !== location.origin || !url.pathname.startsWith('/api/')) {
       return nativeFetch(input, options);
     }
 
@@ -91,20 +91,20 @@
         mode: 'dujiao',
         ready: true,
         paymentReady: true,
-        label: '商城订单',
+        label: '模拟订单 · 不收取资金',
         channels: CHANNELS,
         contact: {
           online_support: '在线人工客服',
           service_hours: '周一至周日 09:00 - 24:00',
-          wechat: 'HhAI-Support',
-          telegram: 'https://t.me/HhAI_Support',
-          email: 'support@hh.ai',
+          wechat: '',
+          telegram: '',
+          email: '',
           tips: '咨询提示：咨询时请直接提供您的订单号或下单邮箱；切勿向任何人透露账号密码。'
         },
         redeemPortal: {
-          url: 'https://chatgpt.com/',
-          name: 'ChatGPT 官方全自动对卡直接充值中心',
-          slotNotice: '（官方直充：在上方专属卡密复制后，点击直接前往官方兑换网站直接卡密使用）'
+          url: '待填入',
+          name: '兑换入口尚未配置',
+          slotNotice: '演示卡密不可兑换；真实收款及交付服务尚未上线。'
         },
         captchaRequired: false,
         products: PRODUCTS
@@ -251,9 +251,9 @@
         total_amount_cents: totalAmountCents,
         total_amount: (totalAmountCents / 100).toFixed(2),
         currency: 'CNY',
-        status: 'pending',
+        status: 'pending_payment',
         created_at: Date.now(),
-        expires_at: new Date(Date.now() + 1800000).toISOString(),
+        expires_at: new Date(Date.now() + 1200000).toISOString(),
         email: email || 'guest@hh.ai',
         token: token || '',
         fulfillment: null
@@ -273,18 +273,20 @@
         product_name: 'ChatGPT Plus',
         quantity: 1
       };
+      order.channel_id = Number(body.channelId || body.channel_id || 1);
+      storage.saveOrder(order);
       const usdtAmt = (order.total_amount_cents / 720).toFixed(2);
       const paymentData = {
         order_id: order.id,
-        channel_id: body.channel_id || 1,
-        channel_name: body.channel_id === 2 ? 'USDT - BEP20 (BSC网络)' : 'USDT - TRC20 (TRX网络)',
+        channel_id: order.channel_id,
+        channel_name: order.channel_id === 2 ? 'USDT - BEP20 (BSC网络)' : 'USDT - TRC20 (TRX网络)',
         amount_cny: (order.total_amount_cents / 100).toFixed(2),
         amount_usdt: usdtAmt,
         currency: 'USDT',
-        crypto_address: 'TQn9Y2khEsLJW1ChVWFMSMeSTow5KaxUJJ',
-        network: body.channel_id === 2 ? 'BEP20' : 'TRC20',
+        crypto_address: 'DEMO-NO-TRANSFER-ADDRESS',
+        network: order.channel_id === 2 ? 'BEP20' : 'TRC20',
         pay_url: `${location.origin}/?order=${order.id}`,
-        expires_at: Date.now() + 900000
+        expires_at: Date.parse(order.expires_at)
       };
       return jsonResponse({
         status_code: 0,
@@ -298,43 +300,16 @@
       const orderId = path.split('/')[4];
       const orders = storage.getOrders();
       let order = orders.find(o => o.id === orderId || o.order_no === orderId);
-      if (!order) {
-        order = {
-          id: orderId,
-          order_no: orderId,
-          title: 'ChatGPT Plus × 1',
-          product_id: 'gpt-plus',
-          total_amount_cents: 13500,
-          total_amount: '135.00',
-          currency: 'CNY',
-          status: 'paid',
-          fulfillment: {
-            payload: 'Hh-PLUS-88F2-A901-2026',
-            card_keys: ['Hh-PLUS-88F2-A901-2026'],
-            redeem_url: 'https://chatgpt.com/'
-          },
-          card_key: 'Hh-PLUS-88F2-A901-2026'
-        };
-      } else {
-        // In interactive demo, simulate payment auto-confirm after 2 seconds or on query
-        if (order.status === 'pending') {
-          order.status = 'paid';
-          const cardType = (order.product_id || 'PLUS').toUpperCase().replace(/[^A-Z0-9]/g, '');
-          const cardKey = `Hh-${cardType}-88F2-A901-2026`;
-          order.fulfillment = {
-            payload: cardKey,
-            card_keys: [cardKey],
-            redeem_url: 'https://chatgpt.com/'
-          };
-          order.card_key = cardKey;
-          storage.saveOrder(order);
-        }
+      if (!order) return jsonResponse({ error: '未找到此浏览器中的演示订单' }, 404);
+      if (order.status === 'pending_payment' && Date.parse(order.expires_at) <= Date.now()) {
+        order.status = 'canceled';
+        storage.saveOrder(order);
       }
       return jsonResponse({ status_code: 0, data: { order }, order });
     }
 
     // Fallback default
-    return jsonResponse({ status: 0, data: {} });
+    return jsonResponse({ error: '在线演示暂不支持此操作，未发送真实请求' }, 403);
   };
 
   // Add top banner informing user that this is an interactive live preview
@@ -345,11 +320,38 @@
     banner.innerHTML = `
       <span style="display:inline-flex;align-items:center;gap:6px;">
         <span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#22c55e;"></span>
-        <strong>Hh · AI 最新版本在线演示</strong>
+        <strong>Hh · AI 模拟演示 · 不收款</strong>
       </span>
       <span style="color:#8b949e;">｜</span>
-      <span style="color:#c9d1d9;">支持全流程交互：图形码注册、忘记密码（含倒计时）、1:1 独立黑金收银台、支付成功自动跳转及卡密展示</span>
+      <span style="color:#c9d1d9;">请使用测试邮箱和测试密码。订单仅保存在此浏览器；付款和卡密均为模拟，不可转账或兑换。</span>
     `;
     document.body.prepend(banner);
+    const orderId = new URLSearchParams(location.search).get('order');
+    if (!orderId) return;
+    const order = storage.getOrders().find(o => o.id === orderId);
+    if (!order) return;
+    const dialog = document.createElement('dialog');
+    dialog.style.cssText = 'border:1px solid #ddd;border-radius:24px;padding:32px;max-width:460px;width:calc(100% - 40px);color:#171717;background:white';
+    dialog.innerHTML = `<h2>Hh AI · 模拟收银台</h2><p>演示金额 <strong>${(order.total_amount_cents / 720).toFixed(2)} USDT</strong></p><p>网络：${order.channel_id === 2 ? 'BSC / BEP20' : 'TRON / TRC20'}</p><p>剩余时间 <strong id="demo-expiry"></strong></p><div style="padding:32px;background:#f4f4f4;border-radius:16px;text-align:center">收款码待配置<br>暂无真实收款地址，请勿转账</div><p>点击下方按钮仅模拟到账，不涉及真实资金。示例卡密不可兑换。</p><button id="demo-confirm" style="padding:14px;width:100%;margin-bottom:12px">模拟付款成功</button><button id="demo-close" style="padding:12px;width:100%">返回商城</button>`;
+    document.body.append(dialog);
+    dialog.showModal();
+    const confirm = dialog.querySelector('#demo-confirm');
+    const tick = () => {
+      const seconds = Math.max(0, Math.ceil((Date.parse(order.expires_at) - Date.now()) / 1000));
+      dialog.querySelector('#demo-expiry').textContent = `${String(Math.floor(seconds / 60)).padStart(2, '0')}:${String(seconds % 60).padStart(2, '0')}`;
+      confirm.disabled = !seconds || order.status !== 'pending_payment';
+    };
+    tick();
+    const countdown = setInterval(tick, 1000);
+    confirm.onclick = () => {
+      if (Date.parse(order.expires_at) <= Date.now()) return;
+      order.status = 'paid';
+      order.fulfillment = { payload: 'DEMO-NOT-REDEEMABLE', card_keys: ['DEMO-NOT-REDEEMABLE'] };
+      order.card_key = 'DEMO-NOT-REDEEMABLE';
+      storage.saveOrder(order);
+      clearInterval(countdown);
+      location.href = '/?view=orders&order_no=' + encodeURIComponent(order.id) + '&payment_return=1';
+    };
+    dialog.querySelector('#demo-close').onclick = () => { location.href = '/'; };
   });
 })();
