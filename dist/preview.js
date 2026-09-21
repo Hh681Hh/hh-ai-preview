@@ -104,7 +104,7 @@
         redeemPortal: {
           url: 'https://666666.homes/',
           name: '自动兑换充值网站',
-          slotNotice: '演示卡密不可兑换；真实收款及交付服务尚未上线。'
+          slotNotice: '复制上方专属卡密，前往自动兑换充值网站（https://666666.homes/）直接卡充，30秒全自动到账。'
         },
         captchaRequired: false,
         products: PRODUCTS

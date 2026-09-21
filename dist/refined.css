@@ -1341,6 +1341,19 @@ footer p {
 }
 
 /* 自动对卡网站预留槽位 */
+.redeem-portal-slot.ready {
+  border-style: solid;
+  border-color: rgba(16, 185, 129, 0.35);
+  background: linear-gradient(180deg, #f0fdf4 0%, #ffffff 100%);
+  box-shadow: 0 4px 16px rgba(16, 185, 129, 0.08);
+}
+
+.slot-notice-badge.ready {
+  background: #ecfdf5 !important;
+  color: #059669 !important;
+  border: 1px solid #a7f3d0 !important;
+}
+
 .redeem-portal-slot {
   background: var(--apple-surface-secondary);
   border: 1px dashed var(--apple-border);
