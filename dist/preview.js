@@ -102,8 +102,8 @@
           tips: '咨询提示：咨询时请直接提供您的订单号或下单邮箱；切勿向任何人透露账号密码。'
         },
         redeemPortal: {
-          url: '待填入',
-          name: '兑换入口尚未配置',
+          url: 'https://666666.homes/',
+          name: '自动兑换充值网站',
           slotNotice: '演示卡密不可兑换；真实收款及交付服务尚未上线。'
         },
         captchaRequired: false,

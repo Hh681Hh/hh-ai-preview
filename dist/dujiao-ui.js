@@ -24,9 +24,9 @@
   // 后续老板提供真实的自动兑换卡网址时，可直接在 storefront/.data/redeem-config.json 中修改
   // ==========================================================================
   const REDEEM_PORTAL_CONFIG = {
-    url: 'https://待填入自动兑换网址.com', // 👈【自动对卡兑换充值网站预留槽位】
-    name: '官方全自动对卡直接充值中心',
-    slotNotice: '（说明：自动兑换充值网址预留槽位已就绪，后续在 .data/redeem-config.json 中填入网址即可全站同步）'
+    url: 'https://666666.homes/',
+    name: '自动兑换充值网站',
+    slotNotice: '复制卡密后，前往兑换网站按页面指引完成充值。'
   };
 
   function getRedeemConfig() {
@@ -105,7 +105,7 @@
         <div class="redeem-portal-slot">
           <div class="slot-label">
             <span>自动兑换充值网站 (卡密直接充值)</span>
-            <small class="slot-notice-badge">预留槽位已启用</small>
+            <small class="slot-notice-badge">${redeemReady ? '兑换入口已配置' : '兑换入口待配置'}</small>
           </div>
           <div class="slot-row">
             ${redeemReady ? `<a href="${esc(redeemUrl)}" target="_blank" rel="noopener noreferrer" class="portal-link" id="redeem-portal-link">
