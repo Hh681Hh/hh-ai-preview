@@ -197,25 +197,41 @@
     if (!channels || !channels.length) {
       return '<div class="detail-note">在线收银通道配置中，可使用账户余额直接秒付。</div>';
     }
-    const sorted = [...channels].sort((a, b) => (a.name.includes('TRC20') ? -1 : 1));
+    const sorted = [...channels].sort((a, b) => {
+      const aIsBinance = /bep20|bsc|币安/i.test(a.name);
+      const bIsBinance = /bep20|bsc|币安/i.test(b.name);
+      if (aIsBinance && !bIsBinance) return -1;
+      if (!aIsBinance && bIsBinance) return 1;
+      return 0;
+    });
+
+    if (!preferredChannel && sorted.length) {
+      preferredChannel = sorted[0].id;
+    }
+
     return `
       <div class="payment-options" role="radiogroup" aria-label="支付方式">
-        ${sorted.map((c, i) => `
-          <label class="payment-choice payment-choice-simple">
-            <input type="radio" name="payment-channel" value="${c.id}" ${preferredChannel === c.id || (!preferredChannel && i === 0) ? 'checked' : ''}>
-            <div class="payment-choice-indicator"></div>
-            <div class="payment-choice-text">
-              <strong>${esc(c.name)}</strong>
-              <small>${c.name.includes('TRC20') ? 'TRON 波场网络 · 币安/OKX/任意Web3钱包转账' : 'BSC 币安智能链 · 极速转账'}</small>
-            </div>
-          </label>
-        `).join('')}
+        ${sorted.map(c => {
+          const isBinance = /bep20|bsc|币安/i.test(c.name);
+          const checked = preferredChannel === c.id;
+          return `
+            <label class="payment-choice payment-choice-simple ${isBinance ? 'is-recommended' : ''}">
+              ${isBinance ? '<span class="payment-badge-rec">推荐 · 手续费低</span>' : ''}
+              <input type="radio" name="payment-channel" value="${c.id}" ${checked ? 'checked' : ''}>
+              <div class="payment-choice-indicator"></div>
+              <div class="payment-choice-text">
+                <strong>${isBinance ? '币安智能链 (BEP20)' : '波场网络 (TRC20)'}</strong>
+                <small>${isBinance ? '手续费极低 · 秒到账' : 'TRON · 交易所通用'}</small>
+              </div>
+            </label>
+          `;
+        }).join('')}
       </div>
     `;
   }
 
   function chosenChannel() {
-    return Number(document.querySelector('input[name="payment-channel"]:checked')?.value || 1);
+    return Number(document.querySelector('input[name="payment-channel"]:checked')?.value || 2);
   }
 
   const lastCheckoutState = {
@@ -223,7 +239,7 @@
     email: '',
     password: '',
     quantity: 1,
-    channelId: 1
+    channelId: 2
   };
   let currentCheckoutStep = 'product'; // 'product' | 'cashier' | 'success'
 
@@ -832,11 +848,15 @@
     const orderAmountCents = Number(order.total_amount_cents || (order.total_amount ? Math.round(Number(order.total_amount) * 100) : 13500));
     const amountUsdt = payment?.amount_usdt || (orderAmountCents / 720).toFixed(2);
     const amountCny = payment?.amount_cny || money(order.total_amount || (orderAmountCents / 100));
-    const isBep20 = payment?.network === 'BEP20' || payment?.channel_id === 2 || preferredChannel === 2;
-    const networkShort = isBep20 ? 'BEP20' : 'TRC20';
+    const bscAddress = '0x00e604bc700db518d206018ff789682f864062c4';
+    const trc20Address = 'TQn9Y2khEsLJW1ChVWFMSMeSTow5KaxUJJ';
+
+    let currentNetwork = (payment?.network === 'TRC20' || payment?.channel_id === 1 || preferredChannel === 1) ? 'TRC20' : 'BEP20';
+    let currentAddress = currentNetwork === 'BEP20' ? bscAddress : trc20Address;
+    const isBep20 = currentNetwork === 'BEP20';
+    const networkShort = currentNetwork;
     const networkFullName = isBep20 ? 'BNB Smart Chain (BSC / BEP20)' : 'TRON (TRC20)';
-    const walletAddress = payment?.crypto_address || payment?.token || (isBep20 ? '0x00e604bc700db518d206018ff789682f864062c4' : 'TQn9Y2khEsLJW1ChVWFMSMeSTow5KaxUJJ');
-    const qrUrl = payment?.qr_code && payment.qr_code.startsWith('http') ? payment.qr_code : ('https://api.qrserver.com/v1/create-qr-code/?size=240x240&margin=8&data=' + encodeURIComponent(walletAddress));
+    const qrUrl = 'https://api.qrserver.com/v1/create-qr-code/?size=240x240&margin=8&data=' + encodeURIComponent(currentAddress);
 
     $('#product-detail').innerHTML = `
       <div class="checkout-layout">
@@ -856,6 +876,45 @@
             <p class="cashier-subtitle">
               系统已锁定专属支付通道。到账后公链节点将在 15~30 秒内完成确认，并在当前页面自动发放 <b>ChatGPT 专属提货卡密</b> 与 <b>自动兑换入口</b>。
             </p>
+          </div>
+
+          <!-- 付款公链网络选择器 (双链并排，币安智能链置顶推荐) -->
+          <div class="cashier-network-selector-box">
+            <div class="selector-header-title">
+              <span>选择支付公链网络</span>
+              <small style="color:var(--apple-text-secondary);font-size:12px;font-weight:normal;">（支持币安、OKX 或任意 Web3 钱包扫码或提现转账）</small>
+            </div>
+            <div class="cashier-chains-grid">
+              <!-- 币安智能链 (BEP20) - 推荐置顶 -->
+              <button type="button" class="cashier-chain-tab ${isBep20 ? 'active' : ''}" id="cashier-tab-bep20" data-chain="bep20">
+                <div class="tab-badge-row">
+                  <span class="badge-rec-pill">🔥 推荐 · 手续费低</span>
+                  <span class="chain-check-icon">${isBep20 ? '✓' : ''}</span>
+                </div>
+                <div class="tab-main-row">
+                  <span class="tab-chain-tag tag-bnb">BNB</span>
+                  <div class="tab-text-wrap">
+                    <strong>币安智能链 (BSC / BEP20)</strong>
+                    <small>转账 Gas 极低 (仅约 ¥0.5) · 极速秒级确认</small>
+                  </div>
+                </div>
+              </button>
+
+              <!-- 波场网络 (TRC20) -->
+              <button type="button" class="cashier-chain-tab ${!isBep20 ? 'active' : ''}" id="cashier-tab-trc20" data-chain="trc20">
+                <div class="tab-badge-row">
+                  <span class="badge-normal-pill">通用通道</span>
+                  <span class="chain-check-icon">${!isBep20 ? '✓' : ''}</span>
+                </div>
+                <div class="tab-main-row">
+                  <span class="tab-chain-tag tag-trx">TRX</span>
+                  <div class="tab-text-wrap">
+                    <strong>波场网络 (TRON / TRC20)</strong>
+                    <small>主流交易所通用 · 节点智能同步</small>
+                  </div>
+                </div>
+              </button>
+            </div>
           </div>
 
           <!-- 核心支付金额凭据卡片 -->
@@ -900,7 +959,7 @@
                 <span class="address-safe-tag">✓ 专属有效地址</span>
               </div>
               <div class="address-box-display" id="cashier-wallet-address-display">
-                ${esc(walletAddress)}
+                ${esc(currentAddress)}
               </div>
               <button class="primary wide btn-copy-address-prominent" id="btn-copy-cashier-address" type="button">
                 📋 一键复制收款钱包地址
@@ -916,7 +975,7 @@
             <div class="notice-title">💡 转账注意事项：</div>
             <ul>
               <li><b>实付金额一致：</b>收款地址必须实际收到 <b>${esc(amountUsdt)} USDT</b>。若交易所提现扣手续费，请确保“实际到账”与上方金额完全一致。</li>
-              <li><b>必须使用指定网络：</b>请选择 <b>${esc(networkShort)}</b> 链上提现/转账，切勿错选其他公链网络。</li>
+              <li><b>必须使用指定网络：</b>请选择 <b id="cashier-notice-net-name">${esc(networkShort)}</b> 链上提现/转账，切勿错选其他公链网络。</li>
               <li><b>秒级自动交付：</b>区块链网络确认后（约 15~30 秒），系统将在此页面自动出密，无需人工审核。</li>
             </ul>
           </div>
@@ -993,10 +1052,63 @@
       if (timerDisplay) timerDisplay.textContent = `${m}:${s}`;
     }, 1000);
 
-    // Copy wallet address
+    // Network switcher handlers (BSC BEP20 <-> TRON TRC20)
+    const updateCashierNetwork = (chain) => {
+      const bep = chain === 'bep20';
+      currentNetwork = bep ? 'BEP20' : 'TRC20';
+      currentAddress = bep ? bscAddress : trc20Address;
+      preferredChannel = bep ? 2 : 1;
+
+      // Update tabs
+      const tabBep = document.getElementById('cashier-tab-bep20');
+      const tabTrc = document.getElementById('cashier-tab-trc20');
+      if (tabBep && tabTrc) {
+        tabBep.classList.toggle('active', bep);
+        tabTrc.classList.toggle('active', !bep);
+        const checkBep = tabBep.querySelector('.chain-check-icon');
+        const checkTrc = tabTrc.querySelector('.chain-check-icon');
+        if (checkBep) checkBep.textContent = bep ? '✓' : '';
+        if (checkTrc) checkTrc.textContent = !bep ? '✓' : '';
+      }
+
+      // Update network row badge
+      const netFullName = bep ? 'BNB Smart Chain (BSC / BEP20)' : 'TRON (TRC20)';
+      const netShort = bep ? 'BEP20' : 'TRC20';
+      const netPill = document.querySelector('.cashier-network-row strong');
+      if (netPill) netPill.textContent = netFullName;
+
+      // Update QR code
+      const qrImg = document.getElementById('cashier-qr-img');
+      if (qrImg) {
+        qrImg.src = 'https://api.qrserver.com/v1/create-qr-code/?size=240x240&margin=8&data=' + encodeURIComponent(currentAddress);
+      }
+
+      // Update Address Display
+      const addrDisplay = document.getElementById('cashier-wallet-address-display');
+      if (addrDisplay) {
+        addrDisplay.textContent = currentAddress;
+      }
+
+      // Update Address Label
+      const addrLabel = document.querySelector('.address-label-row span:first-child');
+      if (addrLabel) {
+        addrLabel.textContent = `USDT 收款钱包地址 (${netShort})`;
+      }
+
+      // Update Notice
+      const noticeItem = document.getElementById('cashier-notice-net-name');
+      if (noticeItem) {
+        noticeItem.textContent = netShort;
+      }
+    };
+
+    document.getElementById('cashier-tab-bep20')?.addEventListener('click', () => updateCashierNetwork('bep20'));
+    document.getElementById('cashier-tab-trc20')?.addEventListener('click', () => updateCashierNetwork('trc20'));
+
+    // Copy wallet address (copies the currently selected network address)
     $('#btn-copy-cashier-address')?.addEventListener('click', async () => {
       try {
-        await navigator.clipboard.writeText(walletAddress);
+        await navigator.clipboard.writeText(currentAddress);
         const tip = $('#copy-address-feedback');
         if (tip) {
           tip.style.display = 'block';
@@ -1004,7 +1116,7 @@
         }
       } catch {
         const ta = document.createElement('textarea');
-        ta.value = walletAddress;
+        ta.value = currentAddress;
         document.body.appendChild(ta);
         ta.select();
         document.execCommand('copy');

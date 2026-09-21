@@ -352,25 +352,50 @@
   margin: 24px 0 12px;
 }
 
-/* 极简无图标双线路支付方式 (TRC20 & BEP20) */
+/* 双线路支付方式并排 (币安链 BEP20 & 波场 TRC20) */
 .payment-options {
   display: grid;
-  grid-template-columns: 1fr;
-  gap: 10px;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
   margin-bottom: 20px;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .payment-choice-simple {
+  position: relative;
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 14px 18px;
+  gap: 7px;
+  padding: 14px 8px 12px;
+  min-width: 0;
+  box-sizing: border-box;
   border: 1.5px solid var(--apple-border, rgba(0, 0, 0, 0.08));
-  border-radius: 14px;
+  border-radius: 12px;
   background: #ffffff;
   cursor: pointer;
   transition: transform 0.2s var(--apple-ease, ease), border-color 0.2s var(--apple-ease, ease), background-color 0.2s var(--apple-ease, ease), box-shadow 0.2s var(--apple-ease, ease);
   will-change: transform;
+}
+
+.payment-choice-simple.is-recommended {
+  border-color: rgba(0, 113, 227, 0.28);
+}
+
+.payment-badge-rec {
+  position: absolute;
+  top: -8px;
+  right: 6px;
+  background: linear-gradient(135deg, #ff3b30, #ff6020);
+  color: #ffffff;
+  font-size: 9.5px;
+  font-weight: 700;
+  padding: 1px 6px;
+  border-radius: 999px;
+  box-shadow: 0 2px 6px rgba(255, 59, 48, 0.35);
+  letter-spacing: 0.2px;
+  pointer-events: none;
+  z-index: 2;
 }
 
 .payment-choice-simple:hover {
@@ -391,8 +416,8 @@
 }
 
 .payment-choice-indicator {
-  width: 18px;
-  height: 18px;
+  width: 15px;
+  height: 15px;
   border: 2px solid #c7c7cc;
   border-radius: 50%;
   flex-shrink: 0;
@@ -402,35 +427,43 @@
 
 .payment-choice-simple:has(input:checked) {
   border-color: #0071e3;
-  background: rgba(0, 113, 227, 0.03);
+  background: rgba(0, 113, 227, 0.04);
   box-shadow: 0 2px 10px rgba(0, 113, 227, 0.08);
 }
 
 .payment-choice-simple:has(input:checked) .payment-choice-indicator {
   border-color: #0071e3;
   background: #0071e3;
-  box-shadow: inset 0 0 0 3.5px #ffffff;
+  box-shadow: inset 0 0 0 2.5px #ffffff;
 }
 
 .payment-choice-text {
   flex: 1;
+  min-width: 0;
+  overflow: hidden;
 }
 
 .payment-choice-text strong,
 .payment-choice-title {
   display: block;
-  font-size: 14.5px;
-  font-weight: 600;
+  font-size: 11.5px;
+  font-weight: 700;
   color: var(--apple-text-primary, #1d1d1f);
   letter-spacing: -0.01em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .payment-choice-text small,
 .payment-choice-sub {
   display: block;
-  font-size: 12px;
+  font-size: 10px;
   color: var(--apple-text-secondary, #86868b);
   margin-top: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .payment-check {
@@ -766,6 +799,160 @@
   color: var(--apple-text-secondary, #86868b);
   margin-top: 6px;
   line-height: 1.5;
+}
+
+/* 收银台双公链网络选择器 (并排排放，币安链置顶推荐) */
+.cashier-network-selector-box {
+  margin: 18px 0 20px;
+}
+
+.selector-header-title {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--apple-text-primary, #1d1d1f);
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.cashier-chains-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
+.cashier-chain-tab {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 13px 15px;
+  background: #ffffff;
+  border: 1.5px solid var(--apple-border, rgba(0, 0, 0, 0.09));
+  border-radius: 14px;
+  cursor: pointer;
+  text-align: left;
+  font-family: inherit;
+  transition: all 0.2s var(--apple-ease, ease);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.02);
+}
+
+.cashier-chain-tab:hover {
+  border-color: rgba(0, 113, 227, 0.4);
+  background: #fbfbfd;
+  transform: translateY(-1px);
+}
+
+.cashier-chain-tab.active {
+  border-color: #0071e3;
+  background: rgba(0, 113, 227, 0.04);
+  box-shadow: 0 3px 12px rgba(0, 113, 227, 0.12);
+}
+
+.tab-badge-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 9px;
+}
+
+.badge-rec-pill {
+  font-size: 11px;
+  font-weight: 700;
+  color: #d9381e;
+  background: rgba(255, 59, 48, 0.1);
+  border: 1px solid rgba(255, 59, 48, 0.22);
+  padding: 2.5px 8px;
+  border-radius: 999px;
+  letter-spacing: 0.2px;
+}
+
+.badge-normal-pill {
+  font-size: 11px;
+  font-weight: 600;
+  color: #64748b;
+  background: #f1f5f9;
+  border: 1px solid #e2e8f0;
+  padding: 2.5px 8px;
+  border-radius: 999px;
+}
+
+.chain-check-icon {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 800;
+  border: 1.5px solid #d1d1d6;
+  color: transparent;
+  transition: all 0.2s;
+}
+
+.cashier-chain-tab.active .chain-check-icon {
+  background: #0071e3;
+  border-color: #0071e3;
+  color: #ffffff;
+}
+
+.tab-main-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.tab-chain-tag {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 800;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  flex-shrink: 0;
+}
+
+.tag-bnb {
+  background: #fef08a;
+  color: #854d0e;
+  border: 1px solid #fde047;
+}
+
+.tag-trx {
+  background: #fee2e2;
+  color: #991b1b;
+  border: 1px solid #fecaca;
+}
+
+.tab-text-wrap {
+  flex: 1;
+  min-width: 0;
+}
+
+.tab-text-wrap strong {
+  display: block;
+  font-size: 13.5px;
+  font-weight: 700;
+  color: #1d1d1f;
+  margin-bottom: 2px;
+}
+
+.tab-text-wrap small {
+  display: block;
+  font-size: 11px;
+  color: #86868b;
+  line-height: 1.35;
+}
+
+@media (max-width: 640px) {
+  .cashier-chains-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 /* 金额大卡片 */

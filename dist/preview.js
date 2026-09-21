@@ -14,8 +14,8 @@
   ];
 
   const CHANNELS = [
-    { id: 1, name: 'USDT - TRC20 (TRX网络)', provider_type: 'bepusdt', interaction_mode: 'redirect' },
-    { id: 2, name: 'USDT - BEP20 (BSC网络)', provider_type: 'bepusdt', interaction_mode: 'redirect' }
+    { id: 2, name: 'USDT - BEP20 (BSC网络)', provider_type: 'bepusdt', interaction_mode: 'redirect' },
+    { id: 1, name: 'USDT - TRC20 (TRX网络)', provider_type: 'bepusdt', interaction_mode: 'redirect' }
   ];
 
   // In-memory / localStorage storage
@@ -275,7 +275,7 @@
       };
       const usdtAmt = (order.total_amount_cents / 720).toFixed(2);
       const base = location.pathname.endsWith('/') ? location.pathname : location.pathname + '/';
-      const isBep20 = body.channelId === 2 || body.channel_id === 2;
+      const isBep20 = body.channelId === 2 || body.channel_id === 2 || body.channelId === undefined;
       const walletAddr = isBep20 ? '0x00e604bc700db518d206018ff789682f864062c4' : 'TQn9Y2khEsLJW1ChVWFMSMeSTow5KaxUJJ';
       const paymentData = {
         order_id: order.id,
