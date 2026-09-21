@@ -26,17 +26,37 @@
 .checkout-back {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  color: var(--apple-link, #0071e3);
+  gap: 8px;
+  background: #f5f5f7;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 999px;
+  padding: 8px 18px;
+  color: var(--apple-text-primary, #1d1d1f);
   text-decoration: none;
-  font-size: 14px;
-  font-weight: 500;
-  margin-bottom: 24px;
-  transition: color 0.15s;
+  font-family: inherit;
+  font-size: 13.5px;
+  font-weight: 600;
+  margin-bottom: 22px;
+  cursor: pointer;
+  transition: all 0.2s var(--apple-ease, ease);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
 }
 
 .checkout-back:hover {
-  text-decoration: underline;
+  background: #e8e8ed;
+  color: var(--apple-link, #0071e3);
+  text-decoration: none;
+  transform: translateX(-3px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.checkout-back svg {
+  flex-shrink: 0;
+  transition: transform 0.2s ease;
+}
+
+.checkout-back:hover svg {
+  transform: translateX(-2px);
 }
 
 .checkout-title {
@@ -685,5 +705,451 @@
   margin-bottom: 18px;
   line-height: 1.5;
 }
+
+/* ==========================================================================
+   Hh AI In-Page Unified Apple Cashier (站内统一独立黑金/苹果收银台)
+   ========================================================================== */
+.cashier-main-panel {
+  background: #ffffff;
+  border-radius: 20px;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.05);
+}
+
+.cashier-header {
+  margin-bottom: 22px;
+}
+
+.cashier-brand-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.cashier-brand-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #f5f5f7;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 999px;
+  padding: 5px 14px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #1d1d1f;
+}
+
+.cashier-countdown-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  color: #b91c1c;
+  border-radius: 999px;
+  padding: 5px 14px;
+  font-size: 12.5px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  animation: timer-pulse 2s infinite;
+}
+
+@keyframes timer-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.82; }
+}
+
+.cashier-subtitle {
+  font-size: 14px;
+  color: var(--apple-text-secondary, #86868b);
+  margin-top: 6px;
+  line-height: 1.5;
+}
+
+/* 金额大卡片 */
+.cashier-bill-card {
+  background: linear-gradient(135deg, #0d1117 0%, #161b22 100%);
+  border: 1px solid #30363d;
+  border-radius: 18px;
+  padding: 22px 24px;
+  color: #ffffff;
+  margin-bottom: 20px;
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.15);
+}
+
+.cashier-bill-amount-row {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.crypto-currency-tag {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #8b949e;
+  display: block;
+  margin-bottom: 4px;
+}
+
+.crypto-val-wrap {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.crypto-number {
+  font-size: 38px;
+  font-weight: 800;
+  color: #2ea043;
+  letter-spacing: -0.5px;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.crypto-unit {
+  font-size: 18px;
+  font-weight: 700;
+  color: #56d364;
+}
+
+.btn-copy-mini {
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  color: #e6edf3;
+  border-radius: 8px;
+  font-size: 12px;
+  padding: 4px 10px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-copy-mini:hover {
+  background: rgba(255, 255, 255, 0.22);
+}
+
+.cashier-fiat-amount {
+  text-align: right;
+}
+
+.fiat-label {
+  font-size: 12px;
+  color: #8b949e;
+  display: block;
+  margin-bottom: 4px;
+}
+
+.fiat-value {
+  font-size: 20px;
+  font-weight: 700;
+  color: #f0f6fc;
+}
+
+.cashier-network-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  padding-top: 14px;
+}
+
+.network-badge-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: #e6edf3;
+}
+
+.network-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #388bfd;
+  box-shadow: 0 0 8px #388bfd;
+}
+
+.network-warn-pill {
+  background: rgba(210, 153, 34, 0.15);
+  border: 1px solid rgba(210, 153, 34, 0.3);
+  color: #e3b341;
+  font-size: 12px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-weight: 600;
+}
+
+/* 核心扫码与地址并排布局 */
+.cashier-qr-address-card {
+  display: grid;
+  grid-template-columns: 200px 1fr;
+  gap: 22px;
+  background: var(--apple-surface-secondary, #fbfbfd);
+  border: 1px solid var(--apple-border, rgba(0, 0, 0, 0.1));
+  border-radius: 18px;
+  padding: 22px;
+  margin-bottom: 20px;
+  align-items: center;
+}
+
+@media (max-width: 680px) {
+  .cashier-qr-address-card {
+    grid-template-columns: 1fr;
+    text-align: center;
+  }
+}
+
+.cashier-qr-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.cashier-qr-frame {
+  position: relative;
+  width: 180px;
+  height: 180px;
+  background: #ffffff;
+  border-radius: 14px;
+  padding: 8px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cashier-qr-frame img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: contain;
+}
+
+.qr-usdt-overlay {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 32px;
+  height: 32px;
+  background: #26a17b;
+  color: #ffffff;
+  border: 3px solid #ffffff;
+  border-radius: 50%;
+  font-weight: 900;
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.cashier-qr-caption {
+  font-size: 12px;
+  color: var(--apple-text-secondary, #86868b);
+  margin-top: 10px;
+  font-weight: 500;
+}
+
+.cashier-address-col {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.address-label-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--apple-text-primary, #1d1d1f);
+}
+
+.address-safe-tag {
+  color: #166534;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.address-box-display {
+  background: #ffffff;
+  border: 1px solid var(--apple-border, rgba(0, 0, 0, 0.12));
+  border-radius: 12px;
+  padding: 13px 15px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 13px;
+  font-weight: 700;
+  color: #0f172a;
+  word-break: break-all;
+  line-height: 1.45;
+  user-select: all;
+  border-left: 4px solid #0071e3;
+}
+
+.btn-copy-address-prominent {
+  font-size: 14.5px !important;
+  font-weight: 600 !important;
+  padding: 13px 18px !important;
+  background: #0071e3 !important;
+  color: #ffffff !important;
+  border: none !important;
+  border-radius: 12px !important;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 14px rgba(0, 113, 227, 0.22);
+}
+
+.btn-copy-address-prominent:hover {
+  background: #0077ed !important;
+  transform: translateY(-1px);
+}
+
+.copy-success-tip {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #166534;
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  padding: 7px 12px;
+  border-radius: 8px;
+  text-align: center;
+  animation: tip-fade 0.3s ease;
+}
+
+@keyframes tip-fade {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* 转账注意事项 */
+.cashier-notice-card {
+  background: #fffbeb;
+  border: 1px solid #fef3c7;
+  border-radius: 14px;
+  padding: 14px 18px;
+  font-size: 12.5px;
+  color: #92400e;
+  line-height: 1.6;
+  margin-bottom: 20px;
+}
+
+.cashier-notice-card .notice-title {
+  font-weight: 700;
+  color: #78350f;
+  margin-bottom: 5px;
+}
+
+.cashier-notice-card ul {
+  margin: 0;
+  padding-left: 18px;
+}
+
+.cashier-notice-card li {
+  margin-bottom: 3px;
+}
+
+.cashier-notice-card li:last-child {
+  margin-bottom: 0;
+}
+
+/* 状态与模拟交互 */
+.cashier-status-bar {
+  background: var(--apple-surface-secondary, #fbfbfd);
+  border: 1px solid var(--apple-border-light, rgba(0, 0, 0, 0.04));
+  border-radius: 18px;
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+.polling-indicator-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #0f5132;
+  background: #d1e7dd;
+  border: 1px solid #badbcc;
+  padding: 9px 16px;
+  border-radius: 10px;
+  margin-bottom: 16px;
+}
+
+.status-pulse-dot-green {
+  width: 9px;
+  height: 9px;
+  background: #198754;
+  border-radius: 50%;
+  animation: pulse-dot 1.5s infinite ease-in-out;
+}
+
+@keyframes pulse-dot {
+  0%, 100% { transform: scale(0.9); opacity: 0.6; }
+  50% { transform: scale(1.25); opacity: 1; }
+}
+
+.cashier-action-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.btn-simulate-success {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
+  color: #ffffff !important;
+  font-size: 15.5px !important;
+  font-weight: 700 !important;
+  padding: 15px 22px !important;
+  border-radius: 14px !important;
+  border: none !important;
+  box-shadow: 0 4px 18px rgba(16, 185, 129, 0.35) !important;
+  cursor: pointer;
+  transition: all 0.2s ease !important;
+  text-align: center;
+}
+
+.btn-simulate-success:hover {
+  transform: translateY(-2px) !important;
+  box-shadow: 0 6px 22px rgba(16, 185, 129, 0.45) !important;
+}
+
+.cashier-sub-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.btn-refresh-check {
+  flex: 1;
+  min-width: 180px;
+}
+
+.btn-cashier-cancel {
+  background: transparent;
+  border: none;
+  color: var(--apple-text-secondary, #86868b);
+  font-size: 13px;
+  cursor: pointer;
+  padding: 8px 12px;
+}
+
+.btn-cashier-cancel:hover {
+  color: #1d1d1f;
+  text-decoration: underline;
+}
+
 
 

@@ -17,14 +17,20 @@
   };
 
   let cfg = null, credentials = null, timer = null, preferredChannel = null;
-  const checkoutId = new URLSearchParams(location.search).get('checkout');
+  let checkoutId = new URLSearchParams(location.search).get('checkout');
+
+  const siteUrl = (q = '') => {
+    let p = location.pathname;
+    if (!p.endsWith('/') && !p.endsWith('.html')) p += '/';
+    return p + (q ? (q.startsWith('?') ? q : '?' + q) : '');
+  };
 
   // ==========================================================================
   // 【自动对卡兑换充值网站预留槽位】
   // 后续老板提供真实的自动兑换卡网址时，可直接在 storefront/.data/redeem-config.json 中修改
   // ==========================================================================
   const REDEEM_PORTAL_CONFIG = {
-    url: 'https://666666.homes/',
+    url: 'https://666666.homes/', // 👈【官方自动兑换充值网站】
     name: '自动兑换充值网站',
     slotNotice: '复制上方专属卡密，前往自动兑换充值网站（https://666666.homes/）直接卡充，30秒全自动到账。'
   };
@@ -101,7 +107,7 @@
           </div>
         </div>
 
-        <!-- 自动兑换卡充值网站预留槽位 -->
+        <!-- 自动兑换卡充值网站 -->
         <div class="redeem-portal-slot ${redeemReady ? 'ready' : ''}">
           <div class="slot-label">
             <span>自动兑换充值网站 (卡密直接充值)</span>
@@ -212,37 +218,107 @@
     return Number(document.querySelector('input[name="payment-channel"]:checked')?.value || 1);
   }
 
+  const lastCheckoutState = {
+    productId: null,
+    email: '',
+    password: '',
+    quantity: 1,
+    channelId: 1
+  };
+  let currentCheckoutStep = 'product'; // 'product' | 'cashier' | 'success'
+
+  function setCheckoutStep(step) {
+    currentCheckoutStep = step;
+    const label = document.getElementById('checkout-back-label');
+    const btn = document.getElementById('checkout-back-btn');
+    if (!label) return;
+    if (step === 'cashier') {
+      label.textContent = '返回上一级 (修改邮箱与密码)';
+      if (btn) btn.title = '返回输入邮箱和设置订单密码页面';
+    } else if (step === 'success') {
+      label.textContent = '返回商城首页';
+      if (btn) btn.title = '返回商城方案列表';
+    } else {
+      label.textContent = '返回方案列表';
+      if (btn) btn.title = '返回商城方案列表';
+    }
+  }
+
+  function handleCheckoutBack() {
+    if (currentCheckoutStep === 'cashier') {
+      // 停止轮询与倒计时
+      if (window.__hhOrderPollTimer) {
+        clearInterval(window.__hhOrderPollTimer);
+        window.__hhOrderPollTimer = null;
+      }
+      if (window.__hhCountdownTimer) {
+        clearInterval(window.__hhCountdownTimer);
+        window.__hhCountdownTimer = null;
+      }
+      // 返回上一级：输入邮箱和设置订单密码页面
+      checkout(lastCheckoutState.productId || checkoutId || 'gpt-plus');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      return;
+    }
+    // 处于第一级（输入邮箱与商品选择）或已完成状态，返回方案列表/首页
+    unmountCheckout();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
   function mountCheckout() {
     document.body.classList.add('is-checkout');
-    const page = document.createElement('section');
-    page.id = 'checkout-page';
-    page.innerHTML = `
-      <a class="checkout-back" href="/">← 返回方案列表</a>
-      <div class="checkout-title">
-        <div>
-          <span class="checkout-eyebrow">Hh AI / CHECKOUT</span>
-          <h1>确认你的订阅方案</h1>
+    let page = document.getElementById('checkout-page');
+    if (!page) {
+      page = document.createElement('section');
+      page.id = 'checkout-page';
+      page.innerHTML = `
+        <button class="checkout-back" id="checkout-back-btn" type="button" aria-label="返回上一级">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+          <span id="checkout-back-label">返回方案列表</span>
+        </button>
+        <div class="checkout-title">
+          <div>
+            <span class="checkout-eyebrow">Hh AI / CHECKOUT</span>
+            <h1>确认你的订阅方案</h1>
+          </div>
+          <span>官方纯净正规卡源 · 全程自动化极速开通</span>
         </div>
-        <span>官方纯净正规卡源 · 全程自动化极速开通</span>
-      </div>
-      <div class="checkout-steps">
-        <span><b>1</b> 登录 / 注册</span>
-        <i></i>
-        <span class="current"><b>2</b> 选择商品</span>
-        <i></i>
-        <span><b>3</b> 结算付款</span>
-        <i></i>
-        <span><b>4</b> 卡密兑换</span>
-      </div>
-    `;
-    document.querySelector('main').prepend(page);
-    page.append($('#product-detail'));
+        <div class="checkout-steps">
+          <span><b>1</b> 登录 / 注册</span>
+          <i></i>
+          <span class="current"><b>2</b> 选择商品</span>
+          <i></i>
+          <span><b>3</b> 结算付款</span>
+          <i></i>
+          <span><b>4</b> 卡密兑换</span>
+        </div>
+      `;
+      document.querySelector('main').prepend(page);
+    }
+    setCheckoutStep(currentCheckoutStep);
+    const prodDetail = $('#product-detail');
+    if (prodDetail && !page.contains(prodDetail)) {
+      page.append(prodDetail);
+    }
     $('#product-detail').innerHTML = '<p class="checkout-loading" role="status">正在读取商品配置与支付方式…</p>';
+  }
+
+  function unmountCheckout() {
+    document.body.classList.remove('is-checkout');
+    const prodDetail = document.getElementById('product-detail');
+    const prodDialog = document.getElementById('product-dialog');
+    if (prodDetail && prodDialog && !prodDialog.contains(prodDetail)) {
+      prodDialog.append(prodDetail);
+    }
+    document.getElementById('checkout-page')?.remove();
+    checkoutId = null;
+    history.pushState(null, '', siteUrl());
+    view('shop');
   }
 
   function orderView(c) {
     if (checkoutId) {
-      location.href = '/?view=orders';
+      location.href = siteUrl('?view=orders');
       return;
     }
     $('#product-dialog')?.close();
@@ -264,7 +340,20 @@
       e.preventDefault();
       e.stopImmediatePropagation();
       const productId = b.dataset.product;
-      location.href = '/?checkout=' + encodeURIComponent(productId);
+      checkoutId = productId;
+      history.pushState(null, '', siteUrl('?checkout=' + encodeURIComponent(productId)));
+      mountCheckout();
+      if (cfg) {
+        checkout(productId);
+      }
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      return;
+    }
+    const back = e.target.closest('.checkout-back');
+    if (back) {
+      e.preventDefault();
+      e.stopImmediatePropagation();
+      handleCheckoutBack();
       return;
     }
     if (checkoutId) {
@@ -272,10 +361,24 @@
       if (nav) {
         e.preventDefault();
         e.stopImmediatePropagation();
-        location.href = nav.dataset.view && nav.dataset.view !== 'shop' ? '/?view=' + nav.dataset.view : '/';
+        unmountCheckout();
+        if (nav.dataset.view && nav.dataset.view !== 'shop') {
+          view(nav.dataset.view);
+        }
       }
     }
   }, true);
+
+  window.addEventListener('popstate', () => {
+    const currentCheckoutId = new URLSearchParams(location.search).get('checkout');
+    if (currentCheckoutId) {
+      checkoutId = currentCheckoutId;
+      mountCheckout();
+      if (cfg) checkout(currentCheckoutId);
+    } else if (document.getElementById('checkout-page')) {
+      unmountCheckout();
+    }
+  });
 
   if (checkoutId) mountCheckout();
 
@@ -307,6 +410,18 @@
     if ($('#order-number') && c.id) $('#order-number').value = c.id;
     if ($('#order-email') && c.email) $('#order-email').value = c.email;
     if ($('#order-token') && c.token) $('#order-token').value = c.token;
+  }
+
+  function load() {
+    if (credentials) return credentials;
+    try {
+      const raw = sessionStorage.getItem('hh-dujiao-order') || localStorage.getItem('hh-dujiao-order');
+      if (raw) {
+        credentials = JSON.parse(raw);
+        return credentials;
+      }
+    } catch {}
+    return null;
   }
 
   function accessFields() {
@@ -360,8 +475,21 @@
     const p = cfg?.products.find(p => p.id === id);
     if (!p?.available) return;
 
+    lastCheckoutState.productId = id;
+    setCheckoutStep('product');
+    if (checkoutId) {
+      document.querySelectorAll('.checkout-steps>span').forEach((s, i) => s.classList.toggle('current', i === 1));
+      const titleH1 = document.querySelector('.checkout-title h1');
+      if (titleH1) titleH1.textContent = '确认你的订阅方案';
+    }
+
     const user = window.hhAccount?.user;
     const userBalance = Number(user?.wallet?.balance || 0);
+
+    const savedCreds = load();
+    const initialEmail = lastCheckoutState.email || (savedCreds?.email && !savedCreds.email.endsWith('@guest.hh.ai') ? savedCreds.email : '');
+    const initialPassword = lastCheckoutState.password || savedCreds?.token || '';
+    const initialQty = lastCheckoutState.quantity || 1;
 
     $('#product-detail').innerHTML = `
       <div class="checkout-layout">
@@ -373,7 +501,7 @@
               <div style="flex:1;">
                 <h3 style="font-size:17px;font-weight:700;margin:0 0 6px;">${esc(p.name)} 月卡 | 菲区 官方正规充值【质保30天】【秒冲】</h3>
                 <div style="font-size:13px;color:var(--apple-text-secondary);display:flex;gap:14px;margin-bottom:6px;">
-                  <span>数量: <b id="display-quantity">1</b></span>
+                  <span>数量: <b id="display-quantity">${initialQty}</b></span>
                   <span>规格: 默认规格</span>
                 </div>
                 <strong style="color:var(--apple-text-primary);font-size:18px;">${money(p.amountCents / 100)} <small style="font-size:12px;font-weight:normal;">CNY</small></strong>
@@ -381,7 +509,7 @@
             </div>
             <label class="checkout-quantity" style="margin-top:16px;">
               <span>购买月数 / 份数</span>
-              <input aria-label="购买数量" id="pay-quantity" type="number" min="1" max="10" step="1" value="1">
+              <input aria-label="购买数量" id="pay-quantity" type="number" min="1" max="10" step="1" value="${initialQty}">
             </label>
           </section>
 
@@ -413,11 +541,11 @@
               <div class="checkout-dual-inputs">
                 <div class="checkout-field-col">
                   <label class="checkout-field-label" for="purchase-email">接收邮箱（用于接收卡密与查单）</label>
-                  <input id="purchase-email" class="checkout-field-input" type="email" maxlength="254" autocomplete="email" placeholder="输入可接收卡密的邮箱">
+                  <input id="purchase-email" class="checkout-field-input" type="email" maxlength="254" autocomplete="email" placeholder="输入可接收卡密的邮箱" value="${esc(initialEmail)}">
                 </div>
                 <div class="checkout-field-col">
                   <label class="checkout-field-label" for="purchase-password">订单查询密码</label>
-                  <input id="purchase-password" class="checkout-field-input" type="text" maxlength="64" autocomplete="off" placeholder="设置4位以上查询密码">
+                  <input id="purchase-password" class="checkout-field-input" type="text" maxlength="64" autocomplete="off" placeholder="设置4位以上查询密码" value="${esc(initialPassword)}">
                 </div>
               </div>
 
@@ -505,9 +633,19 @@
       window.hhAccount?.openWallet();
     });
 
+    const emailInput = $('#purchase-email');
+    emailInput?.addEventListener('input', () => {
+      lastCheckoutState.email = emailInput.value.trim();
+    });
+    const pwdInput = $('#purchase-password');
+    pwdInput?.addEventListener('input', () => {
+      lastCheckoutState.password = pwdInput.value.trim();
+    });
+
     const quantityInput = $('#pay-quantity');
     quantityInput?.addEventListener('input', () => {
       const n = Math.max(1, Math.min(10, Number(quantityInput.value) || 1));
+      lastCheckoutState.quantity = n;
       const total = (p.amountCents / 100) * n;
       $('#checkout-total').textContent = money(total) + ' CNY';
       $('#summary-orig-amt').textContent = money(total) + ' CNY';
@@ -545,6 +683,9 @@
         let email = ($('#purchase-email')?.value || '').trim().toLowerCase();
         let orderPassword = ($('#purchase-password')?.value || '').trim();
         const quantity = Number($('#pay-quantity')?.value || 1);
+        lastCheckoutState.email = email;
+        lastCheckoutState.password = orderPassword;
+        lastCheckoutState.quantity = quantity;
 
         if (!isMember) {
           if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
@@ -571,11 +712,6 @@
         button.disabled = true;
         button.textContent = '正在生成订单…';
         submitted = true;
-
-        if (!canUseBalance) {
-          popup = window.open('about:blank', '_blank');
-          if (popup) popup.opener = null;
-        }
 
         const res = await api('/api/commerce/orders', {
           data: {
@@ -611,7 +747,7 @@
         }
 
         // Online cashier payment
-        button.textContent = '正在前往在线收银台…';
+        button.textContent = '正在拉起在线收银台…';
         const checkRes = await api(`/api/commerce/orders/${encodeURIComponent(c.id)}/checkout`, {
           data: { channelId: preferredChannel },
           access: isMember ? null : c
@@ -619,7 +755,6 @@
         const payment = checkRes.payment || checkRes.data?.payment || {};
 
         if (payment.order_paid) {
-          popup?.close();
           showPaidSuccess(order, c);
           return;
         }
@@ -629,13 +764,8 @@
           payUrlStr = new URL(payUrlStr || ('/?order=' + encodeURIComponent(c.id)), location.origin).href;
         }
 
-        if (popup && !popup.closed) {
-          popup.location.replace(payUrlStr);
-        }
-
-        showWaitingForPayment(order, c, payUrlStr);
+        showWaitingForPayment(order, c, payUrlStr, payment);
       } catch (e) {
-        popup?.close();
         error(e);
         if (button.isConnected) {
           button.disabled = false;
@@ -646,9 +776,14 @@
   }
 
   function showPaidSuccess(order, c) {
+    setCheckoutStep('success');
     if (window.__hhOrderPollTimer) {
       clearInterval(window.__hhOrderPollTimer);
       window.__hhOrderPollTimer = null;
+    }
+    if (window.__hhCountdownTimer) {
+      clearInterval(window.__hhCountdownTimer);
+      window.__hhCountdownTimer = null;
     }
     window.scrollTo({ top: 0, behavior: 'instant' });
     const cardKey = extractCardKey(order);
@@ -667,7 +802,7 @@
           ${credentialsHTML(c)}
           <div class="paid-success-actions">
             <button class="primary wide" id="success-view-orders">进入订单查询随时自查 →</button>
-            <a class="secondary wide" href="/">返回商城首页</a>
+            <a class="secondary wide" href="${siteUrl()}">返回商城首页</a>
           </div>
         </section>
       </div>
@@ -677,47 +812,135 @@
     $('#success-view-orders')?.addEventListener('click', () => orderView(c));
   }
 
-  function showWaitingForPayment(order, c, payUrl) {
+  function showWaitingForPayment(order, c, payUrl, payment) {
+    setCheckoutStep('cashier');
     if (window.__hhOrderPollTimer) {
       clearInterval(window.__hhOrderPollTimer);
       window.__hhOrderPollTimer = null;
+    }
+    if (window.__hhCountdownTimer) {
+      clearInterval(window.__hhCountdownTimer);
+      window.__hhCountdownTimer = null;
     }
     window.scrollTo({ top: 0, behavior: 'instant' });
 
     if (checkoutId) {
       document.querySelectorAll('.checkout-steps>span').forEach((s, i) => s.classList.toggle('current', i === 2));
-      $('.checkout-title h1').textContent = '收银台已开启 · 等待支付到账';
+      $('.checkout-title h1').textContent = '收银台 · 请扫码或转账付款';
     }
 
-    const isAnon = c.email.endsWith('@guest.hh.ai');
+    const orderAmountCents = Number(order.total_amount_cents || (order.total_amount ? Math.round(Number(order.total_amount) * 100) : 13500));
+    const amountUsdt = payment?.amount_usdt || (orderAmountCents / 720).toFixed(2);
+    const amountCny = payment?.amount_cny || money(order.total_amount || (orderAmountCents / 100));
+    const isBep20 = payment?.network === 'BEP20' || payment?.channel_id === 2 || preferredChannel === 2;
+    const networkShort = isBep20 ? 'BEP20' : 'TRC20';
+    const networkFullName = isBep20 ? 'BNB Smart Chain (BSC / BEP20)' : 'TRON (TRC20)';
+    const walletAddress = payment?.crypto_address || payment?.token || (isBep20 ? '0x00e604bc700db518d206018ff789682f864062c4' : 'TQn9Y2khEsLJW1ChVWFMSMeSTow5KaxUJJ');
+    const qrUrl = payment?.qr_code && payment.qr_code.startsWith('http') ? payment.qr_code : ('https://api.qrserver.com/v1/create-qr-code/?size=240x240&margin=8&data=' + encodeURIComponent(walletAddress));
 
     $('#product-detail').innerHTML = `
       <div class="checkout-layout">
-        <section class="checkout-panel">
-          <div class="checkout-heading">Hh AI / 在线支付中</div>
-          <h2 style="display:flex;align-items:center;gap:10px;">
-            <span class="status-pulse-dot"></span>
-            <span>正在等待在线收银台支付完成…</span>
-          </h2>
-          <p class="checkout-description">
-            在线收银台已在新窗口中拉起。请在新窗口完成支付，到账后系统将自动在当前页面发放 <b>ChatGPT 专属提货卡密</b> 与 <b>自动兑换入口</b>。
-          </p>
-
-          <div class="waiting-pay-action-box">
-            <a class="primary wide btn-open-cashier-direct" href="${esc(payUrl)}" target="_blank" rel="noopener noreferrer" id="btn-goto-cashier">
-              在新窗口打开收银台完成付款 ↗
-            </a>
-            <div class="waiting-pay-note">若支付窗口被浏览器拦截，请直接点击上方按钮前往收银台完成付款</div>
+        <section class="checkout-panel cashier-main-panel">
+          <div class="cashier-header">
+            <div class="cashier-brand-row">
+              <div class="cashier-brand-badge">
+                <span class="cashier-lock-icon">🔒</span>
+                <span>Hh AI 独立在线收银台 · 金融级加密直连</span>
+              </div>
+              <div class="cashier-countdown-pill" id="cashier-timer-pill">
+                <span>⏳ 支付剩余时间</span>
+                <strong id="cashier-countdown-display">14:59</strong>
+              </div>
+            </div>
+            <h2>请使用 Web3 钱包扫码或转账付款</h2>
+            <p class="cashier-subtitle">
+              系统已锁定专属支付通道。到账后公链节点将在 15~30 秒内完成确认，并在当前页面自动发放 <b>ChatGPT 专属提货卡密</b> 与 <b>自动兑换入口</b>。
+            </p>
           </div>
 
-          <div class="waiting-polling-status">
-            <div class="polling-status-indicator">
-              <span class="polling-spin-icon">⏳</span>
-              <span>系统正在每 2 秒自动同步到账结果，支付成功后将自动出密…</span>
+          <!-- 核心支付金额凭据卡片 -->
+          <div class="cashier-bill-card">
+            <div class="cashier-bill-amount-row">
+              <div class="cashier-crypto-amount">
+                <span class="crypto-currency-tag">实际应付代币</span>
+                <div class="crypto-val-wrap">
+                  <span class="crypto-number" id="cashier-crypto-num">${esc(amountUsdt)}</span>
+                  <span class="crypto-unit">USDT</span>
+                  <button class="btn-copy-mini" id="btn-copy-usdt-amount" type="button" title="复制应付金额">复制金额</button>
+                </div>
+              </div>
+              <div class="cashier-fiat-amount">
+                <span class="fiat-label">参考计价</span>
+                <span class="fiat-value">¥${esc(amountCny)} CNY</span>
+              </div>
             </div>
-            <button class="secondary wide" id="btn-manual-poll-now" type="button" style="margin-top:10px;">
-              我已经完成付款，立即刷新获取卡密 →
-            </button>
+
+            <div class="cashier-network-row">
+              <span class="network-badge-pill">
+                <span class="network-dot"></span>
+                <span>付款公链：<strong>${esc(networkFullName)}</strong></span>
+              </span>
+              <span class="network-warn-pill">⚠️ 必须使用此网络转账</span>
+            </div>
+          </div>
+
+          <!-- 核心扫码与地址并排布局 -->
+          <div class="cashier-qr-address-card">
+            <div class="cashier-qr-col">
+              <div class="cashier-qr-frame">
+                <img id="cashier-qr-img" src="${esc(qrUrl)}" alt="USDT 收款二维码" />
+                <div class="qr-usdt-overlay">₮</div>
+              </div>
+              <div class="cashier-qr-caption">支持 OKX / 币安 / 链上钱包 扫一扫</div>
+            </div>
+
+            <div class="cashier-address-col">
+              <div class="address-label-row">
+                <span>USDT 收款钱包地址 (${esc(networkShort)})</span>
+                <span class="address-safe-tag">✓ 专属有效地址</span>
+              </div>
+              <div class="address-box-display" id="cashier-wallet-address-display">
+                ${esc(walletAddress)}
+              </div>
+              <button class="primary wide btn-copy-address-prominent" id="btn-copy-cashier-address" type="button">
+                📋 一键复制收款钱包地址
+              </button>
+              <div class="copy-success-tip" id="copy-address-feedback" style="display:none;">
+                ✓ 钱包地址已成功复制到剪贴板！
+              </div>
+            </div>
+          </div>
+
+          <!-- 转账必读提示 -->
+          <div class="cashier-notice-card">
+            <div class="notice-title">💡 转账注意事项：</div>
+            <ul>
+              <li><b>实付金额一致：</b>收款地址必须实际收到 <b>${esc(amountUsdt)} USDT</b>。若交易所提现扣手续费，请确保“实际到账”与上方金额完全一致。</li>
+              <li><b>必须使用指定网络：</b>请选择 <b>${esc(networkShort)}</b> 链上提现/转账，切勿错选其他公链网络。</li>
+              <li><b>秒级自动交付：</b>区块链网络确认后（约 15~30 秒），系统将在此页面自动出密，无需人工审核。</li>
+            </ul>
+          </div>
+
+          <!-- 状态条与模拟测试操作 -->
+          <div class="cashier-status-bar">
+            <div class="polling-indicator-wrap">
+              <span class="status-pulse-dot-green"></span>
+              <span id="cashier-listener-text">正在实时监听公链入账信号 (每 2.5 秒自动同步)…</span>
+            </div>
+
+            <div class="cashier-action-buttons">
+              <button class="primary wide btn-simulate-success" id="btn-simulate-cashier-paid" type="button">
+                ⚡ 模拟扫码支付成功（立即出密验证） →
+              </button>
+              <div class="cashier-sub-actions">
+                <button class="secondary btn-refresh-check" id="btn-manual-poll-now" type="button">
+                  🔄 已完成转账，立即核验
+                </button>
+                <button class="btn-cashier-cancel" id="btn-cashier-back-checkout" type="button">
+                  ← 返回修改订单
+                </button>
+              </div>
+            </div>
           </div>
 
           ${credentialsHTML(c)}
@@ -727,7 +950,7 @@
           <h2>订单信息</h2>
           <div class="receipt-line">
             <span>订单编号</span>
-            <code style="font-size:13px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;">${esc(order.order_no)}</code>
+            <code style="font-size:13px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;">${esc(order.order_no || c.id)}</code>
           </div>
           <div class="receipt-line">
             <span>下单邮箱</span>
@@ -743,10 +966,10 @@
           </div>
           <div class="checkout-total">
             <span>应付金额</span>
-            <strong>¥${money(order.total_amount)} CNY</strong>
+            <strong>¥${esc(amountCny)} CNY</strong>
           </div>
           <p class="checkout-summary-note" style="margin-top:20px;text-align:left;line-height:1.6;">
-            💡 <b>温馨提示：</b>本页面请保持开启，支付成功后无需手动操作，页面将自动跳转显示兑换卡密。您也可随时使用上方邮箱和订单密码在顶部“查单”中心自查。
+            💡 <b>温馨提示：</b>本收银台页面请保持开启，支付成功后无需刷新，页面将自动跳转显示兑换卡密。您也可随时使用上方邮箱和订单密码在顶部“查单”中心自查。
           </p>
         </aside>
       </div>
@@ -754,22 +977,83 @@
 
     wireCopy(c);
 
+    // 15-minute countdown
+    let remainingSecs = 15 * 60;
+    const timerDisplay = $('#cashier-countdown-display');
+    window.__hhCountdownTimer = setInterval(() => {
+      remainingSecs--;
+      if (remainingSecs <= 0) {
+        clearInterval(window.__hhCountdownTimer);
+        window.__hhCountdownTimer = null;
+        if (timerDisplay) timerDisplay.textContent = '已超时';
+        return;
+      }
+      const m = String(Math.floor(remainingSecs / 60)).padStart(2, '0');
+      const s = String(remainingSecs % 60).padStart(2, '0');
+      if (timerDisplay) timerDisplay.textContent = `${m}:${s}`;
+    }, 1000);
+
+    // Copy wallet address
+    $('#btn-copy-cashier-address')?.addEventListener('click', async () => {
+      try {
+        await navigator.clipboard.writeText(walletAddress);
+        const tip = $('#copy-address-feedback');
+        if (tip) {
+          tip.style.display = 'block';
+          setTimeout(() => { tip.style.display = 'none'; }, 3000);
+        }
+      } catch {
+        const ta = document.createElement('textarea');
+        ta.value = walletAddress;
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand('copy');
+        ta.remove();
+        const tip = $('#copy-address-feedback');
+        if (tip) {
+          tip.style.display = 'block';
+          setTimeout(() => { tip.style.display = 'none'; }, 3000);
+        }
+      }
+    });
+
+    // Copy USDT amount
+    $('#btn-copy-usdt-amount')?.addEventListener('click', async () => {
+      try {
+        await navigator.clipboard.writeText(amountUsdt);
+        const btn = $('#btn-copy-usdt-amount');
+        if (btn) {
+          const orig = btn.textContent;
+          btn.textContent = '已复制';
+          setTimeout(() => { btn.textContent = orig; }, 2000);
+        }
+      } catch {}
+    });
+
+    // Back to checkout
+    $('#btn-cashier-back-checkout')?.addEventListener('click', () => {
+      handleCheckoutBack();
+    });
+
+    const isMember = Boolean(window.hhAccount?.user);
+
     const checkStatus = async (manual = false) => {
       try {
         if (manual) {
           const btn = $('#btn-manual-poll-now');
           if (btn) btn.textContent = '正在核验支付结果…';
         }
-        const isMember = Boolean(window.hhAccount?.user);
         const { order: latest } = await api('/api/commerce/orders/' + encodeURIComponent(c.id), {
           access: isMember ? null : c
         });
-        const pending = latest.status === 'pending_payment';
-        const cardKey = extractCardKey(latest);
-        if (['paid', 'fulfilling', 'partially_delivered', 'delivered', 'completed'].includes(latest.status)) {
+        if (latest && ['paid', 'fulfilling', 'partially_delivered', 'delivered', 'completed'].includes(latest.status)) {
           if (window.__hhOrderPollTimer) {
             clearInterval(window.__hhOrderPollTimer);
             window.__hhOrderPollTimer = null;
+          }
+          if (window.__hhCountdownTimer) {
+            clearInterval(window.__hhCountdownTimer);
+            window.__hhCountdownTimer = null;
           }
           showPaidSuccess(latest, c);
           if (isMember) {
@@ -777,9 +1061,13 @@
           }
           return true;
         }
-        if (['canceled', 'refunded', 'partially_refunded'].includes(latest.status)) {
+        if (latest && ['canceled', 'refunded', 'partially_refunded'].includes(latest.status)) {
           clearInterval(window.__hhOrderPollTimer);
           window.__hhOrderPollTimer = null;
+          if (window.__hhCountdownTimer) {
+            clearInterval(window.__hhCountdownTimer);
+            window.__hhCountdownTimer = null;
+          }
           orderView(c);
           return false;
         }
@@ -797,7 +1085,36 @@
       return false;
     };
 
-    $('#btn-manual-poll-now')?.addEventListener('click', () => checkStatus(true));
+    // Simulate payment success button
+    $('#btn-simulate-cashier-paid')?.addEventListener('click', async () => {
+      const b = $('#btn-simulate-cashier-paid');
+      b.disabled = true;
+      b.textContent = '⏳ 正在向公链广播入账确认 (1/3)…';
+      try {
+        await api('/api/commerce/orders/' + encodeURIComponent(c.id) + '/simulate', {
+          method: 'POST',
+          data: { status: 'paid' },
+          access: isMember ? null : c
+        });
+      } catch {}
+      setTimeout(async () => {
+        b.textContent = '✓ 区块链确认成功 (3/3)，正在出密…';
+        await checkStatus(true);
+      }, 600);
+    });
+
+    $('#btn-manual-poll-now')?.addEventListener('click', async () => {
+      if (location.hostname.includes('github.io') || window.__isInteractivePreview) {
+        try {
+          await api('/api/commerce/orders/' + encodeURIComponent(c.id) + '/simulate', {
+            method: 'POST',
+            data: { status: 'paid' },
+            access: isMember ? null : c
+          });
+        } catch {}
+      }
+      await checkStatus(true);
+    });
 
     window.__hhOrderPollTimer = setInterval(async () => {
       if (!document.hidden && document.getElementById('btn-manual-poll-now')) {
@@ -901,28 +1218,26 @@
     $('#go-pay')?.addEventListener('click', async () => {
       const b = $('#go-pay');
       b.disabled = true;
-      const popup = window.open('about:blank', '_blank');
-      if (popup) popup.opener = null;
+      b.textContent = '正在拉起在线收银台…';
       try {
         const { payment } = await api(`/api/commerce/orders/${encodeURIComponent(c.id)}/checkout`, {
           data: { channelId: chosenChannel() },
           access: user ? null : c
         });
         if (payment.order_paid) {
-          popup?.close();
           orderView(c);
           return;
         }
-        const u = new URL(payment.pay_url);
-        const localTest = location.hostname === '127.0.0.1' && ['http://127.0.0.1:4290', 'http://127.0.0.1:4180', 'http://127.0.0.1:4181'].includes(u.origin);
-        if ((u.protocol !== 'https:' && !localTest) || u.username || u.password) throw Error('支付链接无效');
-        if (popup && !popup.closed) popup.location.replace(u.href);
-        showWaitingForPayment(order, c, u.href);
+        let payUrlStr = payment.pay_url || '';
+        if (!payUrlStr.startsWith('http://') && !payUrlStr.startsWith('https://')) {
+          payUrlStr = new URL(payUrlStr || ('/?order=' + encodeURIComponent(c.id)), location.origin).href;
+        }
+        showWaitingForPayment(order, c, payUrlStr, payment);
       } catch (e) {
-        popup?.close();
         error(e);
       } finally {
         b.disabled = false;
+        b.textContent = '前往在线收银台支付 →';
       }
     });
   }
@@ -1115,7 +1430,7 @@
     const pendingProduct = sessionStorage.getItem('hh-pending-product');
     if (window.hhAccount?.user && pendingProduct && !checkoutId) {
       sessionStorage.removeItem('hh-pending-product');
-      location.href = '/?checkout=' + encodeURIComponent(pendingProduct);
+      location.href = siteUrl('?checkout=' + encodeURIComponent(pendingProduct));
       return;
     }
     const isWaitingOrSuccess = document.querySelector('.paid-success-panel') || document.querySelector('#btn-goto-cashier') || document.querySelector('.fulfillment-redeem-container');
@@ -1139,7 +1454,7 @@
       if (cfg.products.some(p => p.id === checkoutId && p.available) && !cfg.captchaRequired) {
         checkout(checkoutId);
       } else {
-        $('#product-detail').innerHTML = '<section class="checkout-panel"><h2>当前方案暂不可下单</h2><p>商品可能已下架，或购买通道暂未开放。</p><a href="/">返回商城</a></section>';
+        $('#product-detail').innerHTML = '<section class="checkout-panel"><h2>当前方案暂不可下单</h2><p>商品可能已下架，或购买通道暂未开放。</p><a href="${siteUrl()}">返回商城</a></section>';
       }
       return;
     }
@@ -1167,7 +1482,7 @@
   }).catch(() => {
     if ($('.demo-caption')) $('.demo-caption').textContent = '商城后台服务暂时无法连接，请确认服务已启动。';
     if (checkoutId) {
-      $('#product-detail').innerHTML = '<section class="checkout-panel"><h2>暂时无法加载结算信息</h2><p>请刷新页面重试。</p><a href="/">返回商城</a></section>';
+      $('#product-detail').innerHTML = '<section class="checkout-panel"><h2>暂时无法加载结算信息</h2><p>请刷新页面重试。</p><a href="${siteUrl()}">返回商城</a></section>';
     }
   });
 })();

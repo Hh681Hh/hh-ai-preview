@@ -871,7 +871,7 @@
         `;
         container.querySelectorAll('[data-order]').forEach(button => {
           button.addEventListener('click', () => {
-            location.href = '/?view=orders&order_no=' + encodeURIComponent(button.dataset.order);
+            const p = (location.pathname.endsWith('/') || location.pathname.endsWith('.html')) ? location.pathname : location.pathname + '/'; location.href = p + '?view=orders&order_no=' + encodeURIComponent(button.dataset.order);
           });
         });
       } catch (err) {
