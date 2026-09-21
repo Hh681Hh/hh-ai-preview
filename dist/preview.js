@@ -45,6 +45,23 @@
     }
   };
 
+  // Handle demo recharge return
+  try {
+    const params = new URLSearchParams(location.search);
+    if (params.get('preview_recharge') === '1') {
+      const amt = Number(params.get('amount') || 50);
+      let user = storage.getUser() || {
+        id: 'usr_demo',
+        email: 'lenhui681@gmail.com',
+        display_name: 'lenhui681',
+        wallet: { balance: '315.00' }
+      };
+      if (!user.wallet) user.wallet = {};
+      user.wallet.balance = (Number(user.wallet.balance || 0) + amt).toFixed(2);
+      storage.setUser(user);
+    }
+  } catch {}
+
   let currentCaptcha = { token: 'cap-' + Date.now(), text: '8A3K' };
   let lastVerifyCode = '888888';
 
@@ -205,7 +222,8 @@
         email: email.trim(),
         display_name: email.trim().split('@')[0],
         total_recharged: 0,
-        total_spent: 0
+        total_spent: 0,
+        wallet: { balance: '315.00' }
       };
       storage.setUser(user);
       return jsonResponse({ status: 0, msg: '登录成功', user });
@@ -219,8 +237,25 @@
 
     // 9. Current User (Me)
     if (path === '/api/account/me' && method === 'GET') {
-      const user = storage.getUser();
+      let user = storage.getUser();
+      if (user && !user.wallet) {
+        user.wallet = { balance: '315.00' };
+        storage.setUser(user);
+      }
       return jsonResponse({ user });
+    }
+
+    // 9.1 Wallet Recharge (simulates redirect to cashier & balance update)
+    if (path === '/api/account/wallet/recharge' && method === 'POST') {
+      const amt = Number(body.amount) || 50;
+      const base = location.pathname.endsWith('/') ? location.pathname : location.pathname + '/';
+      const payUrl = `${location.origin}${base}?payment_return=1&wallet_recharge=1&preview_recharge=1&amount=${amt}`;
+      return jsonResponse({
+        status: 0,
+        ok: true,
+        pay_url: payUrl,
+        data: { pay_url: payUrl }
+      });
     }
 
     // 10. Orders List
@@ -279,6 +314,26 @@
         product_name: 'ChatGPT Plus',
         quantity: 1
       };
+      if (body.useBalance === true) {
+        const user = storage.getUser();
+        const cost = (order.total_amount_cents || 13500) / 100;
+        const curBal = Number(user?.wallet?.balance || 0);
+        if (user && curBal >= cost) {
+          user.wallet.balance = (curBal - cost).toFixed(2);
+          storage.setUser(user);
+        }
+        order.status = 'paid';
+        const cardType = (order.product_id || 'PLUS').toUpperCase().replace(/[^A-Z0-9]/g, '');
+        const cardKey = `Hh-${cardType}-88F2-A901-2026`;
+        order.fulfillment = { payload: cardKey, card_keys: [cardKey], redeem_url: 'https://666666.homes/' };
+        order.card_key = cardKey;
+        storage.saveOrder(order);
+        return jsonResponse({
+          status_code: 0,
+          payment: { order_paid: true },
+          data: { payment: { order_paid: true } }
+        });
+      }
       const usdtAmt = (order.total_amount_cents / 720).toFixed(2);
       const base = location.pathname.endsWith('/') ? location.pathname : location.pathname + '/';
       const isBep20 = body.channelId === 2 || body.channel_id === 2 || body.channelId === undefined;

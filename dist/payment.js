@@ -4,6 +4,16 @@
   const esc = v => String(v ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   const money = v => Number(v || 0).toFixed(2);
   const token = () => Array.from(crypto.getRandomValues(new Uint8Array(32)), x => x.toString(16).padStart(2, '0')).join('');
+  const safeUuid = () => {
+    if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
+      try { return crypto.randomUUID(); } catch {}
+    }
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
+      const r = Math.random() * 16 | 0;
+      const v = c === 'x' ? r : (r & 0x3 | 0x8);
+      return v.toString(16);
+    });
+  };
   const statusNames = {
     pending_payment: '等待付款',
     paid: '付款已确认，自动开通中',
@@ -688,13 +698,12 @@
       }
     });
 
-    const key = crypto.randomUUID();
-
     $('#create-payment')?.addEventListener('click', async () => {
       const button = $('#create-payment');
       let submitted = false;
       let popup = null;
       try {
+        const key = safeUuid();
         const isMember = Boolean(window.hhAccount?.user);
         let email = ($('#purchase-email')?.value || '').trim().toLowerCase();
         let orderPassword = ($('#purchase-password')?.value || '').trim();
@@ -745,7 +754,7 @@
 
         // If user has balance and clicked "balance pay", immediately execute balance payment!
         if (canUseBalance) {
-          button.textContent = '正在使用账户余额扣款…';
+          button.textContent = '正在使用账户余额秒付…';
           try {
             const payRes = await api(`/api/commerce/orders/${encodeURIComponent(c.id)}/checkout`, {
               data: { useBalance: true, channelId: 0 },
@@ -753,6 +762,13 @@
             });
             const payment = payRes.payment || payRes.data?.payment;
             if (payment?.order_paid) {
+              order.status = 'paid';
+              order.total_amount = ((p.amountCents / 100) * quantity).toFixed(2);
+              order.wallet_paid_amount = order.total_amount;
+              try {
+                const updated = await api(`/api/commerce/orders/${encodeURIComponent(c.id)}`, { access: isMember ? null : c });
+                if (updated.order) Object.assign(order, updated.order);
+              } catch {}
               await window.hhAccount?.refreshUser();
               showPaidSuccess(order, c);
               return;

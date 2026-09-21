@@ -628,21 +628,21 @@
         </div>
 
         <div class="recharge-mode-section">
-          <h3>选择支付/充值方式</h3>
+          <h3>选择充值公链网络</h3>
           <div class="recharge-channel-list">
             <label class="channel-choice-item">
-              <input type="radio" name="recharge-method" value="test-topup" checked>
+              <input type="radio" name="recharge-channel" value="2" checked>
               <div class="channel-choice-info">
-                <span class="channel-choice-title">⚡ 快速模拟秒充 <span class="test-tag">本地测试免付款</span></span>
-                <span class="channel-choice-desc">本地联调模式，点击即时充值入账，适合快速测试消费流程</span>
+                <span class="channel-choice-title">🔥 币安智能链 (BEP20) <span class="test-tag" style="background:#fef3c7;color:#b45309;">推荐 · 手续费极低</span></span>
+                <span class="channel-choice-desc">转账 Gas 极低 (仅约 ¥0.5) · 极速秒级确认 · 推荐首选</span>
               </div>
               <span class="channel-radio-mark">✓</span>
             </label>
             <label class="channel-choice-item">
-              <input type="radio" name="recharge-method" value="gateway">
+              <input type="radio" name="recharge-channel" value="1">
               <div class="channel-choice-info">
-                <span class="channel-choice-title">💳 在线收银台支付 (USDT / 支付宝)</span>
-                <span class="channel-choice-desc">唤起正规支付网关收银台，付款成功后自动回调上分</span>
+                <span class="channel-choice-title">波场网络 (TRC20)</span>
+                <span class="channel-choice-desc">TRON 网络 · 各大交易所通用 · 适合大额转账</span>
               </div>
               <span class="channel-radio-mark">✓</span>
             </label>
@@ -697,38 +697,28 @@
     rechargeBtn.addEventListener('click', async () => {
       statusBox.textContent = '';
       if (!selectedAmount || selectedAmount <= 0) {
+        statusBox.className = 'wallet-dialog-status error';
         statusBox.textContent = '请选择或输入有效的充值金额';
         return;
       }
 
-      const method = walletDialog.querySelector('input[name="recharge-method"]:checked')?.value;
+      const channelId = Number(walletDialog.querySelector('input[name="recharge-channel"]:checked')?.value || 2);
       rechargeBtn.disabled = true;
-      rechargeBtn.textContent = '正在处理充值…';
+      rechargeBtn.textContent = '正在拉起支付页面…';
 
       try {
-        if (method === 'test-topup') {
-          const res = await api('/api/account/wallet/test-topup', {
-            data: { amount: selectedAmount }
-          });
-          if (!state.user.wallet) state.user.wallet = {};
-          state.user.wallet.balance = res.balance;
-          walletDialog.querySelector('#modal-bal-display').textContent = money(res.balance);
+        const res = await api('/api/account/wallet/recharge', {
+          data: { amount: selectedAmount, channelId }
+        });
+        const payUrl = res.pay_url || res.data?.pay_url;
+        if (payUrl) {
           statusBox.className = 'wallet-dialog-status success';
-          statusBox.textContent = `🎉 充值成功！已到账 ¥${money(selectedAmount)}，当前余额为 ¥${money(res.balance)}`;
-          updateHeader();
-          notifyStateChange();
+          statusBox.textContent = '已创建充值单，正在直接跳转收银台…';
+          location.href = payUrl;
+          return;
         } else {
-          // Gateway recharge
-          const res = await api('/api/account/wallet/recharge', {
-            data: { amount: selectedAmount, channelId: 1 }
-          });
-          if (res.pay_url) {
-            statusBox.className = 'wallet-dialog-status success';
-            statusBox.innerHTML = `充值单已生成！<a href="${esc(res.pay_url)}" target="_blank" class="recharge-gateway-link">点击前往收银台完成付款 ↗</a>`;
-            window.open(res.pay_url, '_blank');
-          } else {
-            statusBox.textContent = '充值单已创建，等待支付处理中…';
-          }
+          statusBox.className = 'wallet-dialog-status error';
+          statusBox.textContent = res.error || '无法拉起支付页面，请重试';
         }
       } catch (err) {
         statusBox.className = 'wallet-dialog-status error';
@@ -1090,6 +1080,23 @@
     }));
   }
 
+  function showAccountToast(msg) {
+    let t = document.getElementById('hh-global-toast');
+    if (!t) {
+      t = document.createElement('div');
+      t.id = 'hh-global-toast';
+      t.style.cssText = 'position:fixed;top:28px;left:50%;transform:translateX(-50%);background:rgba(15,23,42,0.92);color:#fff;padding:14px 28px;border-radius:14px;font-size:14px;font-weight:600;box-shadow:0 12px 36px rgba(0,0,0,0.3);z-index:99999;backdrop-filter:blur(10px);transition:all 0.35s cubic-bezier(0.16,1,0.3,1);opacity:0;pointer-events:none;display:flex;align-items:center;gap:10px;border:1px solid rgba(255,255,255,0.15);';
+      document.body.appendChild(t);
+    }
+    t.innerHTML = msg;
+    t.style.opacity = '1';
+    t.style.transform = 'translateX(-50%) translateY(0)';
+    setTimeout(() => {
+      t.style.opacity = '0';
+      t.style.transform = 'translateX(-50%) translateY(-12px)';
+    }, 5000);
+  }
+
   // Initialize
   state.ready = Promise.all([
     api('/api/account/me').catch(() => ({ user: null })),
@@ -1099,6 +1106,18 @@
     state.settings = cfg;
     updateHeader();
     notifyStateChange();
+
+    // Check if returning from payment/recharge
+    const params = new URLSearchParams(location.search);
+    if (params.get('wallet_recharge') === '1' || (params.get('payment_return') === '1' && !params.get('order_no'))) {
+      const amt = params.get('amount');
+      history.replaceState(null, '', location.pathname);
+      refreshUser().then(u => {
+        const bal = u?.wallet?.balance || '0.00';
+        showAccountToast(amt ? `🎉 充值已成功到账！已入账 ¥${amt}，当前钱包可用余额为 ¥${bal}` : `🎉 钱包充值已到账！当前最新可用余额为 ¥${bal}`);
+      });
+    }
+
     return state.user;
   });
 
@@ -1111,6 +1130,7 @@
     openCenter,
     refreshUser,
     logout,
-    api
+    api,
+    showToast: showAccountToast
   };
 })();
