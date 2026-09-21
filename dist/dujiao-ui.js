@@ -848,8 +848,8 @@
     const orderAmountCents = Number(order.total_amount_cents || (order.total_amount ? Math.round(Number(order.total_amount) * 100) : 13500));
     const amountUsdt = payment?.amount_usdt || (orderAmountCents / 720).toFixed(2);
     const amountCny = payment?.amount_cny || money(order.total_amount || (orderAmountCents / 100));
-    const bscAddress = '0x00e604bc700db518d206018ff789682f864062c4';
-    const trc20Address = 'TQn9Y2khEsLJW1ChVWFMSMeSTow5KaxUJJ';
+    const bscAddress = '0xfd230ae698aa051ed7ee982ac19d0ff87a163c69';
+    const trc20Address = 'TJosRGMTxnM7uR7h5KFgU1YXwwGXY6XqV9';
 
     let currentNetwork = (payment?.network === 'TRC20' || payment?.channel_id === 1 || preferredChannel === 1) ? 'TRC20' : 'BEP20';
     let currentAddress = currentNetwork === 'BEP20' ? bscAddress : trc20Address;

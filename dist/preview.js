@@ -5,6 +5,12 @@
  * 1:1 Cashier page, auto-redirect, and card key redemption.
  */
 (() => {
+  // Only activate mock interceptor on static hosts (like github.io) or when explicit ?preview=true is provided.
+  // On real production server with Dujiao-Next backend, allow real API calls to pass through.
+  if (!location.hostname.includes('github.io') && !location.search.includes('preview=true')) {
+    return;
+  }
+
   const nativeFetch = window.fetch.bind(window);
 
   const PRODUCTS = [
@@ -276,7 +282,7 @@
       const usdtAmt = (order.total_amount_cents / 720).toFixed(2);
       const base = location.pathname.endsWith('/') ? location.pathname : location.pathname + '/';
       const isBep20 = body.channelId === 2 || body.channel_id === 2 || body.channelId === undefined;
-      const walletAddr = isBep20 ? '0x00e604bc700db518d206018ff789682f864062c4' : 'TQn9Y2khEsLJW1ChVWFMSMeSTow5KaxUJJ';
+      const walletAddr = isBep20 ? '0xfd230ae698aa051ed7ee982ac19d0ff87a163c69' : 'TJosRGMTxnM7uR7h5KFgU1YXwwGXY6XqV9';
       const paymentData = {
         order_id: order.id,
         channel_id: isBep20 ? 2 : 1,
